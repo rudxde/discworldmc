@@ -1,6 +1,7 @@
-import * as fs from 'fs';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
+import * as fs from 'fs';
+import 'reflect-metadata';
 import { Configuration } from './configuration';
 
 async function readConfigFile(): Promise<Configuration> {
