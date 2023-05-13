@@ -1,6 +1,7 @@
-import * as fs from 'fs';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
+import * as fs from 'fs';
+import 'reflect-metadata';
 import { Configuration } from './configuration';
 import { RedisServerStatusPersistance } from './redis/redis-server-status-persistance';
 import { Kubernetes } from './kubernetes/kubernetes';
