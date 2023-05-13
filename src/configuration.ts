@@ -39,5 +39,7 @@ export class ServerConfiguration {
     @IsString()
     declare deploymentName: string;
     @IsString()
+    declare id: string;
+    @IsString()
     declare displayName: string;
 }
