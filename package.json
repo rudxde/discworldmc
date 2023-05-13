@@ -1,0 +1,37 @@
+{
+  "name": "discworldmc",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index",
+  "types": "index",
+  "scripts": {
+    "start": "node dist/main.js",
+    "build": "tsc -p .",
+    "test": "ts-node -P ./tsconfig.test.json node_modules/jasmine/bin/jasmine --config=jasmine.json",
+    "test:coverage": "ts-node -P ./tsconfig.test.json node_modules/nyc/bin/nyc.js npm run test",
+    "lint": "eslint -c .eslintrc.js --ext .ts ."
+  },
+  "author": "rudxde",
+  "repository": "",
+  "bugs": "",
+  "dependencies": {
+    "@kubernetes/client-node": "^0.18.1",
+    "discord.js": "^14.11.0"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^4.3.1",
+    "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^5.59.5",
+    "@typescript-eslint/eslint-plugin-tslint": "^5.59.5",
+    "@typescript-eslint/parser": "^5.59.5",
+    "eslint": "^8.40.0",
+    "jasmine": "^4.6.0",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^5.0.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0"
+}
