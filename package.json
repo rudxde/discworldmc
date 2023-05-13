@@ -16,7 +16,8 @@
   "bugs": "",
   "dependencies": {
     "@kubernetes/client-node": "^0.18.1",
-    "discord.js": "^14.11.0"
+    "discord.js": "^14.11.0",
+    "redis": "^4.6.6"
   },
   "devDependencies": {
     "@types/jasmine": "^4.3.1",
@@ -27,6 +28,7 @@
     "eslint": "^8.40.0",
     "jasmine": "^4.6.0",
     "nyc": "^15.1.0",
+    "@types/redis": "^4.0.11",
     "ts-node": "^10.4.0",
     "typescript": "^5.0.4"
   },
