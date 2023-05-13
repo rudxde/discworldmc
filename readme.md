@@ -11,3 +11,10 @@ Discord bot permissions:
 - send messages in threads
 
 --> Permissions number: 274877908992
+
+### Discord commands
+
+- `/dw server list` -> returns a list of all servers and if they are currently running
+- `/dw server start <server>` -> starts a server
+- `/dw server stop <server>` -> stops a server
+- `/dw server status <server>` -> returns a detailed status of a server
