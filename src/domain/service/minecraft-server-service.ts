@@ -109,7 +109,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
 
 
     private getStatusForDeployment(deployment: KubernetesDeployment): ServerStatus {
-        if(deployment.specReplicas === 0) {
+        if (deployment.specReplicas === 0) {
             return deployment.totalReplicas === 0 ? ServerStatus.STOPPED : ServerStatus.STOPPING;
         } else {
             return deployment.readyReplicas === deployment.specReplicas ? ServerStatus.RUNNING : ServerStatus.STARTING;
@@ -140,14 +140,20 @@ export class MinecraftServerService implements MinecraftServerProvider {
         const runningServers = serverstatus.filter((server) => server.status === ServerStatus.RUNNING);
         const now = new Date();
         for (const server of runningServers) {
-            const playerCount = await this.minecraftPlayerCountProvider.getPlayerCount(server.id);
-            if (playerCount !== 0) {
+            try {
+                const playerCount = await this.minecraftPlayerCountProvider.getPlayerCount(server.id);
+                if (playerCount !== 0) {
+                    await this.minecraftServerStatusPersistence.setPlayersLastSeen(server.id, now);
+                }
+                const lastSeen = await this.minecraftServerStatusPersistence.getPlayersLastSeen(server.id) ?? now;
+                const timeSinceLastSeen = now.getTime() - lastSeen.getTime();
+                if (timeSinceLastSeen > this.configuration.serverStopTimeoutMs) {
+                    await this.stopServer(server.id);
+                }
+            } catch (error) {
+                // prevent shutdown of unreachable servers
                 await this.minecraftServerStatusPersistence.setPlayersLastSeen(server.id, now);
-            }
-            const lastSeen = await this.minecraftServerStatusPersistence.getPlayersLastSeen(server.id) ?? now;
-            const timeSinceLastSeen = now.getTime() - lastSeen.getTime();
-            if (timeSinceLastSeen > this.configuration.serverStopTimeoutMs) {
-                await this.stopServer(server.id);
+                continue;
             }
         }
     }
