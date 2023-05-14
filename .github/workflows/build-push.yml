@@ -50,5 +50,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: rudxde/dicworldmc:latest
+          tags: rudxde/dicworldmc:build.${{ github.run_number }}
           platforms: linux/amd64,linux/arm64
