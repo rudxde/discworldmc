@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { AuthRoleConfig } from './auth/config/config';
 
 export class Configuration {
     @IsString()
@@ -41,6 +42,10 @@ export class Configuration {
     @IsString()
     @IsIn(['de', 'en'])
     declare language: string;
+    
+    @ValidateNested({each: true})
+    @Type(() => AuthRoleConfig)
+    declare roles: AuthRoleConfig[];
 }
 
 export class ServerConfiguration {
