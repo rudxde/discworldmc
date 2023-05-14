@@ -9,6 +9,7 @@ import type { KubernetesProvider, MinecraftServerStatusProvider, MinecraftServer
 export class MinecraftServerService implements MinecraftServerProvider {
 
     private onServerStopListeners: OnServerStopListener[] = [];
+    private scheduledInterval: NodeJS.Timeout | undefined;
 
     constructor(
         private minecraftPlayerCountProvider: MinecraftServerStatusProvider,
@@ -18,7 +19,13 @@ export class MinecraftServerService implements MinecraftServerProvider {
     ) { }
 
     start(): void {
-        setInterval(() => this.scheduledCheckServerTasks().catch((error) => console.error(error)), 1000);
+        this.scheduledInterval = setInterval(() => this.scheduledCheckServerTasks().catch((error) => console.error(error)), 1000);
+    }
+
+    stop(): void {
+        if (this.scheduledInterval) {
+            clearInterval(this.scheduledInterval);
+        }
     }
 
     async getServerStatus(serverId: string): Promise<MinecraftServerStatus> {
