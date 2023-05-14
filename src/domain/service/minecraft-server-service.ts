@@ -4,14 +4,14 @@ import { WrongState } from '../../error/wrong-state';
 import { KubernetesDeployment } from '../entities/kubernetes';
 import { MinecraftServerStatus, ServerStatus } from '../entities/server';
 import { MinecraftServerProvider, OnServerStopListener, ServerEvent } from '../inbound';
-import type { KubernetesProvider, MinecraftPlayerCountProvider, MinecraftServerStatusPersistenceProvider } from '../outbound';
+import type { KubernetesProvider, MinecraftServerStatusProvider, MinecraftServerStatusPersistenceProvider } from '../outbound';
 
 export class MinecraftServerService implements MinecraftServerProvider {
 
     private onServerStopListeners: OnServerStopListener[] = [];
 
     constructor(
-        private minecraftPlayerCountProvider: MinecraftPlayerCountProvider,
+        private minecraftPlayerCountProvider: MinecraftServerStatusProvider,
         private minecraftServerStatusPersistence: MinecraftServerStatusPersistenceProvider,
         private kubernetesProvider: KubernetesProvider,
         private configuration: Configuration,

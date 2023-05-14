@@ -6,9 +6,10 @@ import { Configuration } from './configuration';
 import { RedisServerStatusPersistance } from './redis/redis-server-status-persistance';
 import { Kubernetes } from './kubernetes/kubernetes';
 import { MinecraftServerService } from './domain/service/minecraft-server-service';
-import {} from 'fs';
+import { } from 'fs';
 import { I18n } from './i18n';
 import { join as joinPath } from 'path';
+import { MinecraftServerStatusProviderService } from './minecraft-sfl/minecraft-server-status-provider-service';
 
 async function readConfigFile(): Promise<Configuration> {
     const configFilePath = process.env.CONFIG_FILE_PATH;
@@ -40,8 +41,9 @@ async function main() {
     const i18n = await readI18nFile(config.language);
     const redisServerPersistance = await RedisServerStatusPersistance.init(config.redis.host, config.redis.port);
     const kubernetes = await Kubernetes.init();
-    const minecraftServerService = new MinecraftServerService(undefined, redisServerPersistance, kubernetes, config);
-    
+    const minecraftServerStatusProviderService = new MinecraftServerStatusProviderService({} as any);
+    const minecraftServerService = new MinecraftServerService(minecraftServerStatusProviderService, redisServerPersistance, kubernetes, config);
+
     minecraftServerService.start();
 }
 

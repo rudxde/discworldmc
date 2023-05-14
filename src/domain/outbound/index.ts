@@ -1,7 +1,7 @@
 import type { KubernetesDeployment } from '../entities/kubernetes';
 import type { ServerStatus } from '../entities/server';
 
-export interface MinecraftPlayerCountProvider {
+export interface MinecraftServerStatusProvider {
     getPlayerCount(serverId: string): Promise<number>;
 }
 
