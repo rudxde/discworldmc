@@ -55,6 +55,11 @@ describe('MinecraftServerService', () => {
             },
             language: 'en',
             maxRunningServers: 1,
+            discord: {
+                appId: '',
+                token: '',
+                guildId: '',
+            },
             redis: {
                 host: 'redis-host',
                 port: 1234,

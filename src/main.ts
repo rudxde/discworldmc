@@ -1,16 +1,17 @@
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import * as fs from 'fs';
-import 'reflect-metadata';
-import { Configuration } from './configuration';
-import { RedisServerStatusPersistance } from './redis/redis-server-status-persistance';
-import { KubernetesProviderService } from './kubernetes/kubernetes-provider-service';
-import { MinecraftServerService } from './domain/service/minecraft-server-service';
 import { } from 'fs';
-import { I18n } from './i18n';
 import { join as joinPath } from 'path';
-import { MinecraftServerStatusProviderService } from './minecraft/minecraft-server-status-provider-service';
+import 'reflect-metadata';
 import { AuthProviderService } from './auth/service/auth-provider-service';
+import { Configuration } from './configuration';
+import { DiscordService } from './discord/discord-service';
+import { MinecraftServerService } from './domain/service/minecraft-server-service';
+import { I18n } from './i18n';
+import { KubernetesProviderService } from './kubernetes/kubernetes-provider-service';
+import { MinecraftServerStatusProviderService } from './minecraft/minecraft-server-status-provider-service';
+import { RedisServerStatusPersistance } from './redis/redis-server-status-persistance';
 import { CliInterface } from './testing/cli-interface';
 import { HttpInterface } from './testing/http-interface';
 
@@ -64,7 +65,9 @@ async function main(): Promise<void> {
             new CliInterface(minecraftServerService).start();
             break;
         case 'discord':
-            throw new Error('Discord interface is not implemented yet');
+            const discordService = new DiscordService(config.discord, minecraftServerService);
+            await discordService.start();
+            break;
         case 'http':
             console.warn('The http interface is only for testing purposes! It is not secure! Don\'t expose it to the internet! ');
             new HttpInterface(minecraftServerService).start();
