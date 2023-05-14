@@ -41,7 +41,7 @@ async function main(): Promise<void> {
     const config = await readConfigFile();
     const i18n = await readI18nFile(config.language);
     const redisServerPersistance = await RedisServerStatusPersistance.init(config.redis.host, config.redis.port);
-    const kubernetes = await KubernetesProviderService.init();
+    const kubernetes = await KubernetesProviderService.init(config.kubernetes);
     const minecraftServerStatusProviderService = new MinecraftServerStatusProviderService(config);
     const minecraftServerService = new MinecraftServerService(minecraftServerStatusProviderService, redisServerPersistance, kubernetes, config);
     const authProviderService = new AuthProviderService(config.roles);

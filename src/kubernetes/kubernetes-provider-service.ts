@@ -1,24 +1,31 @@
 import type { KubernetesDeployment } from '../domain/entities/kubernetes';
 import { KubernetesProvider } from '../domain/outbound';
 import { KubeConfig, AppsV1Api } from '@kubernetes/client-node';
+import { KubernetesConfig } from './config';
 
 export class KubernetesProviderService implements KubernetesProvider {
 
     private kubeApi: AppsV1Api;
 
-    private constructor() {
+    private constructor(
+        private config: KubernetesConfig,
+    ) {
         const kc = new KubeConfig();
-        kc.loadFromDefault();
+        if (config.configPath) {
+            kc.loadFromFile(config.configPath);
+        } else {
+            kc.loadFromDefault();
+        }
         this.kubeApi = kc.makeApiClient(AppsV1Api);
     }
 
-    static async init(): Promise<KubernetesProviderService> {
-        return new KubernetesProviderService();
+    static async init(config: KubernetesConfig): Promise<KubernetesProviderService> {
+        return new KubernetesProviderService(config);
     }
 
-    async getDeploymentsInNamespace(namespace: string): Promise<KubernetesDeployment[]> {
+    async getDeploymentsInNamespace(): Promise<KubernetesDeployment[]> {
         // V1DeploymentList
-        const result = await this.kubeApi.listNamespacedDeployment(namespace);
+        const result = await this.kubeApi.listNamespacedDeployment(this.config.namespace);
         return result.body.items.map((item): KubernetesDeployment => ({
             name: item.metadata?.name ?? '',
             namespace: item.metadata?.namespace ?? '',
@@ -27,8 +34,8 @@ export class KubernetesProviderService implements KubernetesProvider {
         }));
     }
 
-    async getDeployment(namespace: string, name: string): Promise<KubernetesDeployment | undefined> {
-        const result = await this.kubeApi.readNamespacedDeploymentStatus(name, namespace);
+    async getDeployment(name: string): Promise<KubernetesDeployment | undefined> {
+        const result = await this.kubeApi.readNamespacedDeploymentStatus(name, this.config.namespace);
         if (
             !result.body.metadata ||
             !result.body.metadata.name ||
@@ -48,8 +55,8 @@ export class KubernetesProviderService implements KubernetesProvider {
         };
     }
 
-    async scaleDeployment(namespace: string, name: string, replicas: number): Promise<void> {
-        await this.kubeApi.replaceNamespacedDeploymentScale(name, namespace, { spec: { replicas } });
+    async scaleDeployment(name: string, replicas: number): Promise<void> {
+        await this.kubeApi.replaceNamespacedDeploymentScale(name, this.config.namespace, { spec: { replicas } });
     }
 
 }

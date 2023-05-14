@@ -34,7 +34,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
         if (!serverConfigEntry) {
             throw new ServerNotFound(serverId);
         }
-        const deployment = await this.kubernetesProvider.getDeployment(this.configuration.kubernetesNamespace, serverConfigEntry.deploymentName);
+        const deployment = await this.kubernetesProvider.getDeployment(serverConfigEntry.deploymentName);
         if (!deployment) {
             throw new ServerNotFound(serverId);
         }
@@ -52,7 +52,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
         if (status.status !== 'stopped') {
             throw new WrongState(`Server ${serverId} is not int status stopped`);
         }
-        this.kubernetesProvider.scaleDeployment(this.configuration.kubernetesNamespace, serverId, 1);
+        this.kubernetesProvider.scaleDeployment(serverId, 1);
         await this.minecraftServerStatusPersistence.setPlayersLastSeen(serverId, new Date());
         await this.minecraftServerStatusPersistence.setServerStatus(serverId, ServerStatus.STARTING);
     }
@@ -62,12 +62,12 @@ export class MinecraftServerService implements MinecraftServerProvider {
         if (status.status !== 'running') {
             throw new WrongState(`Server ${serverId} is not int status running`);
         }
-        this.kubernetesProvider.scaleDeployment(this.configuration.kubernetesNamespace, serverId, 0);
+        this.kubernetesProvider.scaleDeployment(serverId, 0);
         await this.minecraftServerStatusPersistence.setServerStatus(serverId, ServerStatus.STOPPING);
     }
 
     async getServers(): Promise<MinecraftServerStatus[]> {
-        const deployments = await this.kubernetesProvider.getDeploymentsInNamespace(this.configuration.kubernetesNamespace);
+        const deployments = await this.kubernetesProvider.getDeploymentsInNamespace();
         const status: MinecraftServerStatus[] = this.configuration.servers.map((server) => {
             const deployment = deployments.find((d) => d.name === server.deploymentName);
             if (!deployment) {

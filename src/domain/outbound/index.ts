@@ -13,7 +13,7 @@ export interface MinecraftServerStatusPersistenceProvider {
 }
 
 export interface KubernetesProvider {
-    getDeploymentsInNamespace(namespace: string): Promise<KubernetesDeployment[]>;
-    getDeployment(namespace: string, name: string): Promise<KubernetesDeployment | undefined>;
-    scaleDeployment(namespace: string, name: string, replicas: number): Promise<void>;
+    getDeploymentsInNamespace(): Promise<KubernetesDeployment[]>;
+    getDeployment(name: string): Promise<KubernetesDeployment | undefined>;
+    scaleDeployment(name: string, replicas: number): Promise<void>;
 }

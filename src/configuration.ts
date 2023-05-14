@@ -1,14 +1,14 @@
 import { Type } from 'class-transformer';
 import { IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { AuthRoleConfig } from './auth/config/config';
+import { KubernetesConfig } from './kubernetes/config';
 
 export class Configuration {
-    @IsString()
-    declare kubernetesConfigPath: string;
-
-    @IsString()
-    declare kubernetesNamespace: string;
-
+    
+    @ValidateNested()
+    @Type(() => KubernetesConfig)
+    declare kubernetes: KubernetesConfig;
+    
     /**
      * A list of servers.
      *
@@ -18,7 +18,6 @@ export class Configuration {
     @ValidateNested({ each: true })
     @Type(() => ServerConfiguration)
     declare servers: ServerConfiguration[];
-
 
     @ValidateNested()
     @Type(() => RedisConfig)
