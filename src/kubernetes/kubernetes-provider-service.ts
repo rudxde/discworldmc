@@ -2,7 +2,7 @@ import type { KubernetesDeployment } from '../domain/entities/kubernetes';
 import { KubernetesProvider } from '../domain/outbound';
 import { KubeConfig, AppsV1Api } from '@kubernetes/client-node';
 
-export class Kubernetes implements KubernetesProvider {
+export class KubernetesProviderService implements KubernetesProvider {
 
     private kubeApi: AppsV1Api;
 
@@ -12,8 +12,8 @@ export class Kubernetes implements KubernetesProvider {
         this.kubeApi = kc.makeApiClient(AppsV1Api);
     }
 
-    static async init(): Promise<Kubernetes> {
-        return new Kubernetes();
+    static async init(): Promise<KubernetesProviderService> {
+        return new KubernetesProviderService();
     }
 
     async getDeploymentsInNamespace(namespace: string): Promise<KubernetesDeployment[]> {

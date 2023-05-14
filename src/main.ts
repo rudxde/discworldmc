@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import 'reflect-metadata';
 import { Configuration } from './configuration';
 import { RedisServerStatusPersistance } from './redis/redis-server-status-persistance';
-import { Kubernetes } from './kubernetes/kubernetes';
+import { KubernetesProviderService } from './kubernetes/kubernetes-provider-service';
 import { MinecraftServerService } from './domain/service/minecraft-server-service';
 import { } from 'fs';
 import { I18n } from './i18n';
@@ -40,7 +40,7 @@ async function main(): Promise<void> {
     const config = await readConfigFile();
     const i18n = await readI18nFile(config.language);
     const redisServerPersistance = await RedisServerStatusPersistance.init(config.redis.host, config.redis.port);
-    const kubernetes = await Kubernetes.init();
+    const kubernetes = await KubernetesProviderService.init();
     const minecraftServerStatusProviderService = new MinecraftServerStatusProviderService(config);
     const minecraftServerService = new MinecraftServerService(minecraftServerStatusProviderService, redisServerPersistance, kubernetes, config);
 
