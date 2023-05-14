@@ -3,4 +3,5 @@ export interface KubernetesDeployment {
     namespace: string;
     specReplicas: number;
     readyReplicas: number;
+    totalReplicas: number;
 }

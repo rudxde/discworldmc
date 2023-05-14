@@ -49,8 +49,9 @@ describe('MinecraftServerService', () => {
             scaleDeployment: this.kubernetesProviderScaleDeploymentSpy,
         };
         this.configuration = {
-            kubernetesConfigPath: 'kubernetes-config-path',
-            kubernetesNamespace: 'kubernetes-namespace',
+            kubernetes: {
+                namespace: 'kubernetes-namespace',
+            },
             language: 'en',
             maxRunningServers: 1,
             redis: {
@@ -59,6 +60,7 @@ describe('MinecraftServerService', () => {
             },
             serverStopTimeoutMs: 1000,
             servers: [],
+            roles: [],
         };
     });
 
@@ -86,6 +88,7 @@ describe('MinecraftServerService', () => {
                 namespace: 'kubernetes-namespace',
                 specReplicas: 1,
                 readyReplicas: 1,
+                totalReplicas: 1,
             });
             const minecraftServerService = new MinecraftServerService(
                 this.minecraftPlayerCountProvider,
@@ -106,6 +109,7 @@ describe('MinecraftServerService', () => {
                 namespace: 'kubernetes-namespace',
                 specReplicas: 1,
                 readyReplicas: 0,
+                totalReplicas: 1,
             });
             const minecraftServerService = new MinecraftServerService(
                 this.minecraftPlayerCountProvider,
@@ -126,6 +130,7 @@ describe('MinecraftServerService', () => {
                 namespace: 'kubernetes-namespace',
                 specReplicas: 0,
                 readyReplicas: 1,
+                totalReplicas: 1,
             });
             const minecraftServerService = new MinecraftServerService(
                 this.minecraftPlayerCountProvider,
@@ -146,6 +151,7 @@ describe('MinecraftServerService', () => {
                 namespace: 'kubernetes-namespace',
                 specReplicas: 0,
                 readyReplicas: 0,
+                totalReplicas: 0,
             });
             const minecraftServerService = new MinecraftServerService(
                 this.minecraftPlayerCountProvider,

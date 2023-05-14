@@ -11,6 +11,7 @@ import { I18n } from './i18n';
 import { join as joinPath } from 'path';
 import { MinecraftServerStatusProviderService } from './minecraft/minecraft-server-status-provider-service';
 import { AuthProviderService } from './auth/service/auth-provider-service';
+import { CliInterface } from './testing/cli-interface';
 
 async function readConfigFile(): Promise<Configuration> {
     const configFilePath = process.env.CONFIG_FILE_PATH;
@@ -54,6 +55,9 @@ async function main(): Promise<void> {
     const minecraftServerService = new MinecraftServerService(minecraftServerStatusProviderService, redisServerPersistance, kubernetes, config);
     const authProviderService = new AuthProviderService(config.roles);
     minecraftServerService.start();
+    console.log(`discworldmc started successfully`);
+
+    new CliInterface(minecraftServerService).start();
 }
 
 main().catch((err) => {

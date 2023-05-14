@@ -1,4 +1,4 @@
-import { Configuration } from '../../configuration';
+import { Configuration, ServerConfiguration } from '../../configuration';
 import { ServerNotFound } from '../../error/server-not-found';
 import { ServerStartLimitError } from '../../error/server-start-limit';
 import { WrongState } from '../../error/wrong-state';
@@ -32,10 +32,12 @@ export class MinecraftServerService implements MinecraftServerProvider {
     async getServerStatus(serverId: string): Promise<MinecraftServerStatus> {
         const serverConfigEntry = this.configuration.servers.find((server) => server.id === serverId);
         if (!serverConfigEntry) {
+            console.log(`Server ${serverId} not found`);
             throw new ServerNotFound(serverId);
         }
         const deployment = await this.kubernetesProvider.getDeployment(serverConfigEntry.deploymentName);
         if (!deployment) {
+            console.log(`Deployment ${serverConfigEntry.deploymentName} not found`);
             throw new ServerNotFound(serverId);
         }
         const status = this.getStatusForDeployment(deployment);
@@ -50,9 +52,10 @@ export class MinecraftServerService implements MinecraftServerProvider {
         await this.ensureServerLimitNotReached();
         const status = await this.getServerStatus(serverId);
         if (status.status !== 'stopped') {
-            throw new WrongState(`Server ${serverId} is not int status stopped`);
+            throw new WrongState(`Server ${serverId} is not in status stopped`);
         }
-        this.kubernetesProvider.scaleDeployment(serverId, 1);
+        const serverConfigEntry = this.getServerConfig(serverId);
+        await this.kubernetesProvider.scaleDeployment(serverConfigEntry.deploymentName, 1);
         await this.minecraftServerStatusPersistence.setPlayersLastSeen(serverId, new Date());
         await this.minecraftServerStatusPersistence.setServerStatus(serverId, ServerStatus.STARTING);
     }
@@ -60,9 +63,10 @@ export class MinecraftServerService implements MinecraftServerProvider {
     async stopServer(serverId: string): Promise<void> {
         const status = await this.getServerStatus(serverId);
         if (status.status !== 'running') {
-            throw new WrongState(`Server ${serverId} is not int status running`);
+            throw new WrongState(`Server ${serverId} is not in status running`);
         }
-        this.kubernetesProvider.scaleDeployment(serverId, 0);
+        const serverConfigEntry = this.getServerConfig(serverId);
+        await this.kubernetesProvider.scaleDeployment(serverConfigEntry.deploymentName, 0);
         await this.minecraftServerStatusPersistence.setServerStatus(serverId, ServerStatus.STOPPING);
     }
 
@@ -105,10 +109,11 @@ export class MinecraftServerService implements MinecraftServerProvider {
 
 
     private getStatusForDeployment(deployment: KubernetesDeployment): ServerStatus {
-        return deployment.readyReplicas > deployment.specReplicas ? ServerStatus.STOPPING
-            : deployment.readyReplicas < deployment.specReplicas ? ServerStatus.STARTING
-                : deployment.readyReplicas > 0 ? ServerStatus.RUNNING
-                    : ServerStatus.STOPPED;
+        if(deployment.specReplicas === 0) {
+            return deployment.totalReplicas === 0 ? ServerStatus.STOPPED : ServerStatus.STOPPING;
+        } else {
+            return deployment.readyReplicas === deployment.specReplicas ? ServerStatus.RUNNING : ServerStatus.STARTING;
+        }
     }
 
     private async scheduledCheckServerTasks(): Promise<void> {
@@ -151,6 +156,14 @@ export class MinecraftServerService implements MinecraftServerProvider {
         for (const listener of this.onServerStopListeners) {
             listener(serverId, event);
         }
+    }
+
+    private getServerConfig(serverId: string): ServerConfiguration {
+        const serverConfigEntry = this.configuration.servers.find((server) => server.id === serverId);
+        if (!serverConfigEntry) {
+            throw new ServerNotFound(serverId);
+        }
+        return serverConfigEntry;
     }
 
 }
