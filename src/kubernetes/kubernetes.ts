@@ -6,12 +6,15 @@ export class Kubernetes implements KubernetesProvider {
 
     private kubeApi: AppsV1Api;
 
-    constructor() {
+    private constructor() {
         const kc = new KubeConfig();
         kc.loadFromDefault();
         this.kubeApi = kc.makeApiClient(AppsV1Api);
     }
 
+    static async init(): Promise<Kubernetes> {
+        return new Kubernetes();
+    }
 
     async getDeploymentsInNamespace(namespace: string): Promise<KubernetesDeployment[]> {
         // V1DeploymentList

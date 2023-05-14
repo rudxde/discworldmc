@@ -18,6 +18,10 @@ export class Configuration {
     @Type(() => ServerConfiguration)
     declare servers: ServerConfiguration[];
 
+    
+    @ValidateNested()
+    @Type(() => RedisConfig)
+    declare redis: RedisConfig;
 
     /**
      * The limit of servers that can be running at the same time.
@@ -44,4 +48,11 @@ export class ServerConfiguration {
     declare id: string;
     @IsString()
     declare displayName: string;
+}
+
+export class RedisConfig {
+    @IsString()
+    declare host: string;
+    @IsNumber()
+    declare port: number;
 }

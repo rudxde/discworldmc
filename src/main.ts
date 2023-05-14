@@ -2,6 +2,9 @@ import * as fs from 'fs';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { Configuration } from './configuration';
+import { RedisServerStatusPersistance } from './redis/redis-server-status-persistance';
+import { Kubernetes } from './kubernetes/kubernetes';
+import { MinecraftServerService } from './domain/service/minecraft-server-service';
 
 async function readConfigFile(): Promise<Configuration> {
     const configFilePath = process.env.CONFIG_FILE_PATH;
@@ -20,8 +23,11 @@ async function readConfigFile(): Promise<Configuration> {
 
 async function main() {
     const config = await readConfigFile();
-
-    console.log("Hello World");
+    const redisServerPersistance = await RedisServerStatusPersistance.init(config.redis.host, config.redis.port);
+    const kubernetes = await Kubernetes.init();
+    const minecraftServerService = new MinecraftServerService(undefined, redisServerPersistance, kubernetes, config);
+    
+    minecraftServerService.start();
 }
 
 main().catch((err) => {

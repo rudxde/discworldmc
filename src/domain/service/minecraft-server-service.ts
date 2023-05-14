@@ -17,7 +17,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
         private configuration: Configuration,
     ) { }
 
-    init(): void {
+    start(): void {
         setInterval(() => this.scheduledCheckServerTasks().catch((error) => console.error(error)), 1000);
     }
 
