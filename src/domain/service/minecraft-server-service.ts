@@ -1,5 +1,6 @@
 import { Configuration } from '../../configuration';
 import { ServerNotFound } from '../../error/server-not-found';
+import { ServerStartLimitError } from '../../error/server-start-limit';
 import { WrongState } from '../../error/wrong-state';
 import { KubernetesDeployment } from '../entities/kubernetes';
 import { MinecraftServerStatus, ServerStatus } from '../entities/server';
@@ -46,6 +47,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
     }
 
     async startServer(serverId: string): Promise<void> {
+        await this.ensureServerLimitNotReached();
         const status = await this.getServerStatus(serverId);
         if (status.status !== 'stopped') {
             throw new WrongState(`Server ${serverId} is not int status stopped`);
@@ -87,6 +89,15 @@ export class MinecraftServerService implements MinecraftServerProvider {
     onServerEvent(listener: (serverId: string, reason: ServerEvent) => void): void {
         this.onServerStopListeners.push(listener);
     }
+
+    private async ensureServerLimitNotReached(): Promise<void> {
+        const servers = await this.getServers();
+        const runningServers = servers.filter((server) => server.status === ServerStatus.RUNNING || server.status === ServerStatus.STARTING || server.status === ServerStatus.STOPPING);
+        if (runningServers.length >= this.configuration.maxRunningServers) {
+            throw new ServerStartLimitError();
+        }
+    }
+
 
     private getStatusForDeployment(deployment: KubernetesDeployment): ServerStatus {
         return deployment.readyReplicas > deployment.specReplicas ? ServerStatus.STOPPING
