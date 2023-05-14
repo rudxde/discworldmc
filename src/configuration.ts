@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 export class Configuration {
     @IsString()
@@ -18,7 +18,7 @@ export class Configuration {
     @Type(() => ServerConfiguration)
     declare servers: ServerConfiguration[];
 
-    
+
     @ValidateNested()
     @Type(() => RedisConfig)
     declare redis: RedisConfig;
@@ -37,6 +37,10 @@ export class Configuration {
      */
     @IsNumber()
     declare serverStopTimeoutMs: number;
+
+    @IsString()
+    @IsIn(['de', 'en'])
+    declare language: string;
 }
 
 export class ServerConfiguration {
