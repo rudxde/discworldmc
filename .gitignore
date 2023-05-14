@@ -2,3 +2,4 @@ node_modules
 dist
 .devcontainer
 dw-config.json
+.nyc_output
