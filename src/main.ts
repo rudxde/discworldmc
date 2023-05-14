@@ -40,7 +40,7 @@ async function readI18nFile(language: string): Promise<I18n> {
 async function main(): Promise<void> {
     const config = await readConfigFile();
     const i18n = await readI18nFile(config.language);
-    const redisServerPersistance = await RedisServerStatusPersistance.init(config.redis.host, config.redis.port);
+    const redisServerPersistance = await RedisServerStatusPersistance.init(config.redis);
     const kubernetes = await KubernetesProviderService.init(config.kubernetes);
     const minecraftServerStatusProviderService = new MinecraftServerStatusProviderService(config);
     const minecraftServerService = new MinecraftServerService(minecraftServerStatusProviderService, redisServerPersistance, kubernetes, config);

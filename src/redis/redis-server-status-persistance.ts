@@ -2,6 +2,7 @@ import { ServerStatus } from '../domain/entities/server';
 import { MinecraftServerStatusPersistenceProvider } from '../domain/outbound';
 import type { RedisClientType } from 'redis';
 import { createClient } from 'redis';
+import { RedisConfig } from './config';
 
 export class RedisServerStatusPersistance implements MinecraftServerStatusPersistenceProvider {
 
@@ -9,11 +10,11 @@ export class RedisServerStatusPersistance implements MinecraftServerStatusPersis
         public redisClient: RedisClientType<any, any>,
     ) { }
 
-    static async init(redisHost: string, redisPort?: number): Promise<RedisServerStatusPersistance> {
+    static async init(config: RedisConfig): Promise<RedisServerStatusPersistance> {
         const redisClient: RedisClientType<any, any> = createClient({
             socket: {
-                host: redisHost,
-                ...(redisPort ? { port: redisPort } : {}),
+                host: config.host,
+                ...(config.port ? { port: config.port } : {}),
             },
         });
         await redisClient.connect();

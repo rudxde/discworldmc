@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { AuthRoleConfig } from './auth/config/config';
 import { KubernetesConfig } from './kubernetes/config';
+import { RedisConfig } from './redis/config';
 
 export class Configuration {
     
@@ -58,9 +59,3 @@ export class ServerConfiguration {
     declare displayName: string;
 }
 
-export class RedisConfig {
-    @IsString()
-    declare host: string;
-    @IsNumber()
-    declare port: number;
-}
