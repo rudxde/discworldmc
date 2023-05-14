@@ -18,12 +18,12 @@ export class Kubernetes implements KubernetesProvider {
 
     async getDeploymentsInNamespace(namespace: string): Promise<KubernetesDeployment[]> {
         // V1DeploymentList
-        const result = await this.kubeApi.listNamespacedDeployment(namespace)
+        const result = await this.kubeApi.listNamespacedDeployment(namespace);
         return result.body.items.map((item): KubernetesDeployment => ({
             name: item.metadata?.name ?? '',
             namespace: item.metadata?.namespace ?? '',
             specReplicas: item.spec?.replicas ?? 0,
-            readyReplicas: item.status?.readyReplicas ?? 0
+            readyReplicas: item.status?.readyReplicas ?? 0,
         }));
     }
 
@@ -44,12 +44,12 @@ export class Kubernetes implements KubernetesProvider {
             name: result.body.metadata?.name ?? '',
             namespace: result.body.metadata?.namespace ?? '',
             specReplicas: result.body.spec?.replicas ?? 0,
-            readyReplicas: result.body.status?.readyReplicas ?? 0
+            readyReplicas: result.body.status?.readyReplicas ?? 0,
         };
     }
 
     async scaleDeployment(namespace: string, name: string, replicas: number): Promise<void> {
-        await this.kubeApi.replaceNamespacedDeploymentScale(name, namespace, { spec: { replicas } })
+        await this.kubeApi.replaceNamespacedDeploymentScale(name, namespace, { spec: { replicas } });
     }
 
 }

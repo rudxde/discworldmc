@@ -14,12 +14,12 @@ import { MinecraftServerStatusProviderService } from './minecraft/minecraft-serv
 async function readConfigFile(): Promise<Configuration> {
     const configFilePath = process.env.CONFIG_FILE_PATH;
     if (!configFilePath) {
-        throw new Error("CONFIG_FILE_PATH is not set");
+        throw new Error('CONFIG_FILE_PATH is not set');
     }
     if (!fs.existsSync(configFilePath)) {
         throw new Error(`File ${configFilePath} does not exist`);
     }
-    const config = JSON.parse(fs.readFileSync(configFilePath, "utf8"));
+    const config = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
     const configInstance = plainToInstance(Configuration, config);
     await validateOrReject(configInstance);
     return configInstance;
@@ -30,13 +30,13 @@ async function readI18nFile(language: string): Promise<I18n> {
     if (!fs.existsSync(i18nFilePath)) {
         throw new Error(`The language ${language} is not supported`);
     }
-    const i18n = JSON.parse(fs.readFileSync(i18nFilePath, "utf8"));
+    const i18n = JSON.parse(fs.readFileSync(i18nFilePath, 'utf8'));
     const i18nInstance = plainToInstance(I18n, i18n);
     await validateOrReject(i18nInstance);
     return i18nInstance;
 }
 
-async function main() {
+async function main(): Promise<void> {
     const config = await readConfigFile();
     const i18n = await readI18nFile(config.language);
     const redisServerPersistance = await RedisServerStatusPersistance.init(config.redis.host, config.redis.port);

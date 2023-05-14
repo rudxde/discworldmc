@@ -92,7 +92,12 @@ export class MinecraftServerService implements MinecraftServerProvider {
 
     private async ensureServerLimitNotReached(): Promise<void> {
         const servers = await this.getServers();
-        const runningServers = servers.filter((server) => server.status === ServerStatus.RUNNING || server.status === ServerStatus.STARTING || server.status === ServerStatus.STOPPING);
+        const runningServers = servers.filter(
+            (server) =>
+                server.status === ServerStatus.RUNNING
+                || server.status === ServerStatus.STARTING
+                || server.status === ServerStatus.STOPPING,
+        );
         if (runningServers.length >= this.configuration.maxRunningServers) {
             throw new ServerStartLimitError();
         }
@@ -106,7 +111,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
                     : ServerStatus.STOPPED;
     }
 
-    private async scheduledCheckServerTasks() {
+    private async scheduledCheckServerTasks(): Promise<void> {
         const serverstatus = await this.getServers();
 
         for (const server of serverstatus) {

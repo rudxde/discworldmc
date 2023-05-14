@@ -22,19 +22,19 @@ interface TestThisContext {
 describe('MinecraftServerService', () => {
     beforeEach(function (this: TestThisContext) {
 
-        this.minecraftPlayerCountProviderGetPlayerCountSpy = jasmine.createSpy(`MinecraftServerStatusProvider#getPlayerCount`)
-        this.minecraftServerStatusPersistenceSetPlayersLastSeenSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#setPlayersLastSeen`)
-        this.minecraftServerStatusPersistenceGetPlayersLastSeenSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#getPlayersLastSeen`)
-        this.minecraftServerStatusPersistenceSetServerStatusSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#setServerStatus`)
-        this.minecraftServerStatusPersistenceGetServerStatusSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#getServerStatus`)
-        this.kubernetesProviderGetDeploymentsInNamespaceSpy = jasmine.createSpy(`KubernetesProvider#getDeploymentsInNamespace`)
-        this.kubernetesProviderGetDeploymentSpy = jasmine.createSpy(`KubernetesProvider#getDeployment`)
-        this.kubernetesProviderScaleDeploymentSpy = jasmine.createSpy(`KubernetesProvider#scaleDeployment`)
+        this.minecraftPlayerCountProviderGetPlayerCountSpy = jasmine.createSpy(`MinecraftServerStatusProvider#getPlayerCount`);
+        this.minecraftServerStatusPersistenceSetPlayersLastSeenSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#setPlayersLastSeen`);
+        this.minecraftServerStatusPersistenceGetPlayersLastSeenSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#getPlayersLastSeen`);
+        this.minecraftServerStatusPersistenceSetServerStatusSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#setServerStatus`);
+        this.minecraftServerStatusPersistenceGetServerStatusSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#getServerStatus`);
+        this.kubernetesProviderGetDeploymentsInNamespaceSpy = jasmine.createSpy(`KubernetesProvider#getDeploymentsInNamespace`);
+        this.kubernetesProviderGetDeploymentSpy = jasmine.createSpy(`KubernetesProvider#getDeployment`);
+        this.kubernetesProviderScaleDeploymentSpy = jasmine.createSpy(`KubernetesProvider#scaleDeployment`);
 
 
         this.minecraftPlayerCountProvider = {
             getPlayerCount: this.minecraftPlayerCountProviderGetPlayerCountSpy,
-        }
+        };
 
         this.minecraftServerStatusPersistence = {
             setPlayersLastSeen: this.minecraftServerStatusPersistenceSetPlayersLastSeenSpy,
