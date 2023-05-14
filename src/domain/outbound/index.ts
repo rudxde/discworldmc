@@ -1,4 +1,5 @@
 import type { KubernetesDeployment } from '../entities/kubernetes';
+import type { ServerStatus } from '../entities/server';
 
 export interface MinecraftPlayerCountProvider {
     getPlayerCount(serverId: string): Promise<number>;
@@ -6,7 +7,9 @@ export interface MinecraftPlayerCountProvider {
 
 export interface MinecraftServerStatusPersistenceProvider {
     setPlayersLastSeen(serverId: string, lastSeen: Date): Promise<void>;
-    getPlayersLastSeen(serverId: string): Promise<Date>;
+    getPlayersLastSeen(serverId: string): Promise<Date | undefined>;
+    setServerStatus(serverId: string, status: ServerStatus): Promise<void>;
+    getServerStatus(serverId: string): Promise<ServerStatus | undefined>;
 }
 
 export interface KubernetesProvider {
