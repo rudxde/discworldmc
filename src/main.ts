@@ -9,7 +9,7 @@ import { MinecraftServerService } from './domain/service/minecraft-server-servic
 import { } from 'fs';
 import { I18n } from './i18n';
 import { join as joinPath } from 'path';
-import { MinecraftServerStatusProviderService } from './minecraft-sfl/minecraft-server-status-provider-service';
+import { MinecraftServerStatusProviderService } from './minecraft/minecraft-server-status-provider-service';
 
 async function readConfigFile(): Promise<Configuration> {
     const configFilePath = process.env.CONFIG_FILE_PATH;
