@@ -1,4 +1,4 @@
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import * as fs from 'fs';
 import 'reflect-metadata';
@@ -21,8 +21,12 @@ async function readConfigFile(): Promise<Configuration> {
         throw new Error(`File ${configFilePath} does not exist`);
     }
     const config = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
-    const configInstance = plainToInstance(Configuration, config);
-    await validateOrReject(configInstance);
+    const configInstance = plainToClass(Configuration, config);
+    await validateOrReject(configInstance)
+        .catch((errors) => {
+            console.error(errors.toString());
+            process.exit(1);
+        });
     return configInstance;
 }
 
@@ -33,7 +37,11 @@ async function readI18nFile(language: string): Promise<I18n> {
     }
     const i18n = JSON.parse(fs.readFileSync(i18nFilePath, 'utf8'));
     const i18nInstance = plainToInstance(I18n, i18n);
-    await validateOrReject(i18nInstance);
+    await validateOrReject(i18nInstance)
+        .catch((errors) => {
+            console.error(errors.toString());
+            process.exit(1);
+        });;
     return i18nInstance;
 }
 

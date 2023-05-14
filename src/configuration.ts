@@ -1,14 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsDefined, IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { AuthRoleConfig } from './auth/config/config';
 import { KubernetesConfig } from './kubernetes/config';
 import { RedisConfig } from './redis/config';
 
 export class Configuration {
-    
+    @IsDefined()
     @ValidateNested()
     @Type(() => KubernetesConfig)
-    declare kubernetes: KubernetesConfig;
+    public declare kubernetes: KubernetesConfig;
     
     /**
      * A list of servers.
@@ -16,10 +16,13 @@ export class Configuration {
      * @type {ServerConfiguration[]}
      * @memberof Configuration
      */
+    @IsDefined()
+    @IsArray()
     @ValidateNested({ each: true })
     @Type(() => ServerConfiguration)
     declare servers: ServerConfiguration[];
 
+    @IsDefined()
     @ValidateNested()
     @Type(() => RedisConfig)
     declare redis: RedisConfig;
@@ -44,6 +47,7 @@ export class Configuration {
     declare language: string;
     
     @ValidateNested({each: true})
+    @IsDefined()
     @Type(() => AuthRoleConfig)
     declare roles: AuthRoleConfig[];
 }
