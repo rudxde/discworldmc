@@ -10,6 +10,10 @@ export class Configuration {
     @Type(() => KubernetesConfig)
     public declare kubernetes: KubernetesConfig;
 
+    @ValidateNested()
+    @Type(() => DiscordConfiguration)
+    declare discord: DiscordConfiguration;
+
     /**
      * A list of servers.
      *
@@ -60,6 +64,17 @@ export class Configuration {
     @IsDefined()
     @Type(() => AuthRoleConfig)
     declare roles: AuthRoleConfig[];
+}
+
+export class DiscordConfiguration {
+    @IsString()
+    declare appId: string;
+
+    @IsString()
+    declare token: string;
+
+    @IsString()
+    declare guildId: string;
 }
 
 export class ServerConfiguration {
