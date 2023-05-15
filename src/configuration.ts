@@ -1,4 +1,4 @@
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsArray, IsDefined, IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { AuthRoleConfig } from './auth/config/config';
 import { KubernetesConfig } from './kubernetes/config';
@@ -13,7 +13,7 @@ export class Configuration {
 
     @ValidateNested()
     @Type(() => DiscordConfiguration)
-    declare discord: DiscordConfiguration;
+    declare discord?: DiscordConfiguration;
 
     /**
      * A list of servers.

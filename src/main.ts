@@ -65,6 +65,9 @@ async function main(): Promise<void> {
             new CliInterface(minecraftServerService).start();
             break;
         case 'discord':
+            if (!config.discord) {
+                throw new Error('For discord interface the discord configuration key is required!');
+            }
             const discordService = new DiscordService(config.discord, minecraftServerService);
             await discordService.start();
             break;
