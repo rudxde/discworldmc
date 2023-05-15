@@ -49,6 +49,7 @@ describe('MinecraftServerService', () => {
             scaleDeployment: this.kubernetesProviderScaleDeploymentSpy,
         };
         this.configuration = {
+            interface: 'cli',
             kubernetes: {
                 namespace: 'kubernetes-namespace',
             },

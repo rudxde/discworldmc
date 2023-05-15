@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsArray, IsDefined, IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { AuthRoleConfig } from './auth/config/config';
 import { KubernetesConfig } from './kubernetes/config';
@@ -9,7 +9,7 @@ export class Configuration {
     @ValidateNested()
     @Type(() => KubernetesConfig)
     public declare kubernetes: KubernetesConfig;
-    
+
     /**
      * A list of servers.
      *
@@ -45,8 +45,18 @@ export class Configuration {
     @IsString()
     @IsIn(['de', 'en'])
     declare language: string;
-    
-    @ValidateNested({each: true})
+
+    /**
+     * Use another interface than than discord for testing purposes.
+     *
+     * @type {string}
+     * @memberof Configuration
+     */
+    @IsString()
+    @IsIn(['discord', 'cli', 'http'])
+    public interface: string = 'discord';
+
+    @ValidateNested({ each: true })
     @IsDefined()
     @Type(() => AuthRoleConfig)
     declare roles: AuthRoleConfig[];

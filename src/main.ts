@@ -12,6 +12,7 @@ import { join as joinPath } from 'path';
 import { MinecraftServerStatusProviderService } from './minecraft/minecraft-server-status-provider-service';
 import { AuthProviderService } from './auth/service/auth-provider-service';
 import { CliInterface } from './testing/cli-interface';
+import { HttpInterface } from './testing/http-interface';
 
 async function readConfigFile(): Promise<Configuration> {
     const configFilePath = process.env.CONFIG_FILE_PATH;
@@ -57,7 +58,20 @@ async function main(): Promise<void> {
     minecraftServerService.start();
     console.log(`discworldmc started successfully`);
 
-    new CliInterface(minecraftServerService).start();
+    switch (config.interface) {
+        case 'cli':
+            console.warn('The cli interface is only for testing purposes!');
+            new CliInterface(minecraftServerService).start();
+            break;
+        case 'discord':
+            throw new Error('Discord interface is not implemented yet');
+        case 'http':
+            console.warn('The http interface is only for testing purposes! It is not secure! Don\'t expose it to the internet! ');
+            new HttpInterface(minecraftServerService).start();
+            break;
+        default:
+            throw new Error(`Interface ${config.interface} is not supported`);
+    }
 }
 
 main().catch((err) => {
