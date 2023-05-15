@@ -3,7 +3,7 @@ import { ServerNotFound } from '../../error/server-not-found';
 import { ServerStartLimitError } from '../../error/server-start-limit';
 import { WrongState } from '../../error/wrong-state';
 import { KubernetesDeployment } from '../entities/kubernetes';
-import { MinecraftServerStatus, ServerStatus } from '../entities/server';
+import { MinecraftServerInfo, MinecraftServerStatus, ServerStatus } from '../entities/server';
 import { MinecraftServerProvider, OnServerStopListener, ServerEvent } from '../inbound';
 import type { KubernetesProvider, MinecraftServerStatusProvider, MinecraftServerStatusPersistenceProvider } from '../outbound';
 
@@ -88,6 +88,13 @@ export class MinecraftServerService implements MinecraftServerProvider {
             };
         });
         return status;
+    }
+
+    getServerInfos(): MinecraftServerInfo[] {
+        return this.configuration.servers.map(server => ({
+            id: server.id,
+            displayName: server.displayName,
+        }));
     }
 
     onServerEvent(listener: (serverId: string, reason: ServerEvent) => void): void {

@@ -1,5 +1,5 @@
 import { MinecraftServerProvider, OnServerStopListener } from '../domain/inbound';
-import { MinecraftServerStatus, ServerStatus } from '../domain/entities/server';
+import { MinecraftServerInfo, MinecraftServerStatus, ServerStatus } from '../domain/entities/server';
 import { ServerNotFound } from '../error/server-not-found';
 
 export class MinecraftServerProviderMock implements MinecraftServerProvider {
@@ -39,5 +39,12 @@ export class MinecraftServerProviderMock implements MinecraftServerProvider {
         return this.servers;
     }
 
-    onServerEvent(listener: OnServerStopListener): void {}
+    getServerInfos(): MinecraftServerInfo[] {
+        return this.servers.map(server => ({
+            id: server.id,
+            displayName: server.displayName,
+        }));
+    }
+
+    onServerEvent(listener: OnServerStopListener): void { }
 }
