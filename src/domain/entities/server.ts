@@ -5,8 +5,11 @@ export enum ServerStatus {
     STOPPING = 'stopping',
 }
 
-export interface MinecraftServerStatus {
+export interface MinecraftServerInfo {
     id: string;
     displayName: string;
+}
+
+export interface MinecraftServerStatus extends MinecraftServerInfo {
     status: ServerStatus;
 }

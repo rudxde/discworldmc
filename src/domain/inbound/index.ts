@@ -1,4 +1,4 @@
-import { MinecraftServerStatus } from '../entities/server';
+import { MinecraftServerInfo, MinecraftServerStatus } from '../entities/server';
 
 export enum ServerEvent {
     STOPPED = 'stopped',
@@ -12,5 +12,6 @@ export interface MinecraftServerProvider {
     startServer(serverId: string): Promise<void>;
     stopServer(serverId: string): Promise<void>;
     getServers(): Promise<MinecraftServerStatus[]>;
+    getServerInfos(): MinecraftServerInfo[];
     onServerEvent(listener: OnServerStopListener): void;
 }
