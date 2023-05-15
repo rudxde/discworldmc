@@ -36,7 +36,7 @@ export class KubernetesProviderService implements KubernetesProvider {
     }
 
     async getDeployment(name: string): Promise<KubernetesDeployment | undefined> {
-        const result = await this.kubeApi.readNamespacedDeploymentStatus(name, this.config.namespace)
+        const result = await this.kubeApi.readNamespacedDeployment(name, this.config.namespace)
             .catch((error) => undefined);
         if (!result) {
             return undefined;
