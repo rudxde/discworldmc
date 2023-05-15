@@ -86,6 +86,7 @@ describe('MinecraftServerService', () => {
                 deploymentName: 'deployment-name',
                 displayName: 'display-name',
                 serviceName: 'service-name',
+                servicePort: 25565,
             });
         });
         it('should return the running server status from the deployment', async function (this: TestThisContext) {

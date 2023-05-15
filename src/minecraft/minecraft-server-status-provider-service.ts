@@ -9,11 +9,11 @@ export class MinecraftServerStatusProviderService implements MinecraftServerStat
     ) { }
 
     async getPlayerCount(serverId: string): Promise<number> {
-        const serverHostname = this.config.servers.find((server) => server.id === serverId)?.serviceName;
-        if (!serverHostname) {
+        const serverConfiguration = this.config.servers.find((server) => server.id === serverId);
+        if (!serverConfiguration) {
             throw new Error(`Server ${serverId} not found`);
         }
-        const result = await ping({ host: serverHostname, port: 25565 });
+        const result = await ping({ host: serverConfiguration.serviceName, port: serverConfiguration.servicePort });
         const playerCount = 'playerCount' in result ? result.playerCount : result.players.online;
         return playerCount;
     }

@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsDefined, IsIn, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsDefined, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { AuthRoleConfig } from './auth/config/config';
 import { KubernetesConfig } from './kubernetes/config';
 import { RedisConfig } from './redis/config';
@@ -76,5 +76,6 @@ export class ServerConfiguration {
     declare id: string;
     @IsString()
     declare displayName: string;
+    @IsNumber()
+    public servicePort: number = 25565;
 }
-
