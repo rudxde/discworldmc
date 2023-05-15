@@ -3,6 +3,7 @@ import { IsArray, IsDefined, IsIn, IsNumber, IsString, ValidateNested } from 'cl
 import { AuthRoleConfig } from './auth/config/config';
 import { KubernetesConfig } from './kubernetes/config';
 import { RedisConfig } from './redis/config';
+import { DiscordConfiguration } from './discord/config';
 
 export class Configuration {
     @IsDefined()
@@ -64,17 +65,6 @@ export class Configuration {
     @IsDefined()
     @Type(() => AuthRoleConfig)
     declare roles: AuthRoleConfig[];
-}
-
-export class DiscordConfiguration {
-    @IsString()
-    declare appId: string;
-
-    @IsString()
-    declare token: string;
-
-    @IsString()
-    declare guildId: string;
 }
 
 export class ServerConfiguration {

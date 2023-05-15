@@ -1,5 +1,5 @@
 import { Client, Events, Interaction, Routes } from 'discord.js';
-import { DiscordConfiguration } from '../configuration';
+import { DiscordConfiguration } from './config';
 import { MinecraftServerProvider } from '../domain/inbound';
 import { DiscordCommandsManager } from './commands';
 
