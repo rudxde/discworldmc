@@ -4,15 +4,22 @@ import {
 } from 'discord.js';
 import { MinecraftServerProvider } from '../../domain/inbound';
 import { InvalidCommand } from '../../error/invalid-command';
-import { MinecraftServerInfo } from '../../domain/entities/server';
+import { MinecraftServerInfo, ServerStatus } from '../../domain/entities/server';
 import { ServerNotFound } from '../../error/server-not-found';
+import { I18n } from '../../i18n';
+import { AuthProvider } from '../../auth/inbound';
+import { render as renderTemplate } from 'mustache';
 
 
 export class DiscordCommandsManager {
     private readonly commandData: SlashCommandSubcommandsOnlyBuilder;
     private readonly serverInfos: MinecraftServerInfo[];
 
-    constructor(private readonly minecraftServerProvider: MinecraftServerProvider) {
+    constructor(
+        private readonly minecraftServerProvider: MinecraftServerProvider,
+        private readonly i18n: I18n,
+        private readonly authProvider: AuthProvider,
+    ) {
         this.serverInfos = this.minecraftServerProvider.getServerInfos();
         const serverChoices = this.serverInfos.map(server => ({
             name: server.id,
@@ -96,10 +103,15 @@ export class DiscordCommandsManager {
 
     private async listServers(interaction: ChatInputCommandInteraction): Promise<void> {
         const servers = await this.minecraftServerProvider.getServers();
-        let message = 'The following servers are available:\n';
-        for (const server of servers) {
-            message += `- **${server.displayName}**: id = '${server.id}', status = ${server.status}\n`;
-        }
+
+        const message = renderTemplate(
+            this.i18n.serverList, {
+                servers: servers.map(server => ({
+                    ...server,
+                    statusEmoji: this.getStatusEmoji(server.status),
+                    statusSuffix: this.getStatusSuffix(server.status),
+                })),
+            });
         await interaction.reply(message);
     }
 
@@ -132,6 +144,14 @@ export class DiscordCommandsManager {
             throw new ServerNotFound(id);
         }
         return serverInfo;
+    }
+
+    private getStatusEmoji(status: ServerStatus): string {
+        return this.i18n.statusEmoji[status];
+    }
+
+    private getStatusSuffix(status: ServerStatus): string {
+        return this.i18n.statusSuffix[status];
     }
 }
 

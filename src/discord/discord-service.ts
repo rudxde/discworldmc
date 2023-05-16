@@ -2,6 +2,8 @@ import { Client, Events, Interaction, Routes } from 'discord.js';
 import { DiscordConfiguration } from './config';
 import { MinecraftServerProvider } from '../domain/inbound';
 import { DiscordCommandsManager } from './commands';
+import { I18n } from '../i18n';
+import { AuthProvider } from '../auth/inbound';
 
 
 export class DiscordService {
@@ -11,8 +13,10 @@ export class DiscordService {
     constructor(
         private readonly config: DiscordConfiguration,
         minecraftServerProvider: MinecraftServerProvider,
+        i18n: I18n,
+        authProvider: AuthProvider,
     ) {
-        this.commandManager = new DiscordCommandsManager(minecraftServerProvider);
+        this.commandManager = new DiscordCommandsManager(minecraftServerProvider, i18n, authProvider);
     }
 
     async start(): Promise<void> {

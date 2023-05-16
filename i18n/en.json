@@ -1,3 +1,16 @@
 {
-    "serverShutdown": "The server {} has been shut down."
+    "serverShutdown": "The server {} has been shut down.",
+    "serverList": "The following servers are available:\n\n{{#servers}}{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}\n\n{{/servers}}",
+    "statusEmoji": {
+        "running": ":green_circle:",
+        "starting": ":hourglass:",
+        "stopping": ":octagonal_sign:",
+        "stopped": ":black_circle:"
+    },
+    "statusSuffix": {
+        "running": "",
+        "starting": " (starting)",
+        "stopping": " (stopping)",
+        "stopped": ""
+    }
 }
