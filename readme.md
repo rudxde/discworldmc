@@ -42,6 +42,7 @@ rules:
   verbs: ["get", "list"]
 - apiGroups: ["apps"]
   resources: ["deployments/scale"]
+  verbs: ["update"]
 ```
 
 - create a service account and add a role binding for the namespace.
