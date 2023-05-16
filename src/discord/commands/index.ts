@@ -27,41 +27,41 @@ export class DiscordCommandsManager {
         }));
         this.commandData = new SlashCommandBuilder()
             .setName('dw')
-            .setDescription('Manage minecraft worlds')
+            .setDescription(this.i18n.commandDescriptions.rootCommand)
             .setDefaultMemberPermissions('0')
             .addSubcommandGroup(new SlashCommandSubcommandGroupBuilder()
                 .setName('server')
-                .setDescription('Commands regarding minecraft servers')
+                .setDescription(this.i18n.commandDescriptions.serverCommand)
                 .addSubcommand(new SlashCommandSubcommandBuilder()
                     .setName('list')
-                    .setDescription('List available servers and if they are currently running'),
+                    .setDescription(this.i18n.commandDescriptions.listCommand),
                 )
                 .addSubcommand(new SlashCommandSubcommandBuilder()
                     .setName('start')
-                    .setDescription('Start a specific server')
+                    .setDescription(this.i18n.commandDescriptions.startCommand)
                     .addStringOption(new SlashCommandStringOption()
                         .setName('server-id')
-                        .setDescription('Id of the server to start')
+                        .setDescription(this.i18n.commandDescriptions.startCommandServerId)
                         .setRequired(true)
                         .setChoices(...serverChoices),
                     ),
                 )
                 .addSubcommand(new SlashCommandSubcommandBuilder()
                     .setName('stop')
-                    .setDescription('Stop a specific server')
+                    .setDescription(this.i18n.commandDescriptions.stopCommand)
                     .addStringOption(new SlashCommandStringOption()
                         .setName('server-id')
-                        .setDescription('Id of the server to stop')
+                        .setDescription(this.i18n.commandDescriptions.stopCommandServerId)
                         .setRequired(true)
                         .setChoices(...serverChoices),
                     ),
                 )
                 .addSubcommand(new SlashCommandSubcommandBuilder()
                     .setName('status')
-                    .setDescription('Displays the status of a specific server')
+                    .setDescription(this.i18n.commandDescriptions.statusCommand)
                     .addStringOption(new SlashCommandStringOption()
                         .setName('server-id')
-                        .setDescription('Id of the server in question')
+                        .setDescription(this.i18n.commandDescriptions.statusCommandServerId)
                         .setRequired(true)
                         .setChoices(...serverChoices),
                     ),
@@ -74,31 +74,42 @@ export class DiscordCommandsManager {
     }
 
     async handleChatCommand(interaction: ChatInputCommandInteraction): Promise<void> {
-        if (interaction.commandName !== this.commandData.name) {
-            throw new InvalidCommand(interaction.commandName);
+        try {
+
+
+            if (interaction.commandName !== this.commandData.name) {
+                throw new InvalidCommand(interaction.commandName);
+            }
+            const subcommandGroup = interaction.options.getSubcommandGroup(true);
+            if (subcommandGroup === 'server') {
+                const subcommand = interaction.options.getSubcommand(true);
+                if (subcommand === 'list') {
+                    await this.listServers(interaction);
+                    return;
+                }
+                if (subcommand === 'start') {
+                    await this.startServer(interaction);
+                    return;
+                }
+                if (subcommand === 'stop') {
+                    await this.stopServer(interaction);
+                    return;
+                }
+                if (subcommand === 'status') {
+                    await this.getServerStatus(interaction);
+                    return;
+                }
+                throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup} ${subcommand}`);
+            }
+            throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup}`);
+        } catch (err: unknown) {
+            console.error(err);
+            if (err instanceof Error) {
+                interaction.reply(err.message);
+            } else {
+                interaction.reply(String(err));
+            }
         }
-        const subcommandGroup = interaction.options.getSubcommandGroup(true);
-        if (subcommandGroup === 'server') {
-            const subcommand = interaction.options.getSubcommand(true);
-            if (subcommand === 'list') {
-                await this.listServers(interaction);
-                return;
-            }
-            if (subcommand === 'start') {
-                await this.startServer(interaction);
-                return;
-            }
-            if (subcommand === 'stop') {
-                await this.stopServer(interaction);
-                return;
-            }
-            if (subcommand === 'status') {
-                await this.getServerStatus(interaction);
-                return;
-            }
-            throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup} ${subcommand}`);
-        }
-        throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup}`);
     }
 
     private async listServers(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -117,24 +128,24 @@ export class DiscordCommandsManager {
 
     private async startServer(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
-        await interaction.reply(
-            `Starting server: **${serverInfo.displayName}** #${serverInfo.id}`,
-        );
+        await interaction.reply(renderTemplate(this.i18n.startCommandFeedback, serverInfo));
         await this.minecraftServerProvider.startServer(serverInfo.id);
     }
 
     private async stopServer(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
-        await interaction.reply(
-            `Stopping server: **${serverInfo.displayName}** #${serverInfo.id}`,
-        );
+        await interaction.reply(renderTemplate(this.i18n.stopCommandFeedback, serverInfo));
         await this.minecraftServerProvider.stopServer(serverInfo.id);
     }
 
     private async getServerStatus(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
         const status = await this.minecraftServerProvider.getServerStatus(serverInfo.id);
-        await interaction.reply(`**${status.displayName}** #${status.id}: ${status.status}`);
+        await interaction.reply(renderTemplate(this.i18n.serverStatus, {
+            ...status,
+            statusEmoji: this.getStatusEmoji(status.status),
+            statusSuffix: this.getStatusSuffix(status.status),
+        }));
     }
 
     private getServerInfo(interaction: ChatInputCommandInteraction): MinecraftServerInfo {

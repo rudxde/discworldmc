@@ -1,6 +1,9 @@
 {
     "serverShutdown": "Der Server {} wurde heruntergefahren.",
     "serverList": "Die folgenden Server sind verfügbar:\n\n{{#servers}}{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}\n\n{{/servers}}",
+    "serverStatus": "{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}",
+    "startCommandFeedback": "Starte Server: **{{displayName}}** #{{id}}",
+    "stopCommandFeedback": "Fahre Server herunter: **{{displayName}}** #{{id}}",
     "statusEmoji": {
         "running": ":green_circle:",
         "starting": ":hourglass:",
@@ -12,5 +15,16 @@
         "starting": " (startet)",
         "stopping": " (fährt herunter)",
         "stopped": ""
+    },
+    "commandDescriptions": {
+        "rootCommand": "Verwalte Minecraft-Welten",
+        "serverCommand": "Befehle zum Verwalten von Minecraft-Servern",
+        "listCommand": "Liste verfügbare Server und ob sie gerade laufen",
+        "startCommand": "Starte einen bestimmten Server",
+        "stopCommand": "Fahre einen bestimmten Server herunter",
+        "statusCommand": "Zeigt den Status eines bestimmten Servers an",
+        "startCommandServerId": "ID des zu startenden Servers",
+        "stopCommandServerId": "ID des zu stoppenden Servers",
+        "statusCommandServerId": "ID des betreffenden Servers"
     }
 }

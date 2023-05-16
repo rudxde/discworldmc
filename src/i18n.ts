@@ -6,6 +6,14 @@ export class I18n {
     declare serverShutdown: string;
     @IsString()
     declare serverList: string;
+    @IsString()
+    declare serverStatus: string;
+    @IsString()
+    declare startCommandFeedback: string;
+    @IsString()
+    declare stopCommandFeedback: string;
+
+
     @IsDefined()
     @ValidateNested()
     @Type(() => ServerStatusText)
@@ -14,6 +22,10 @@ export class I18n {
     @ValidateNested()
     @Type(() => ServerStatusText)
     declare statusSuffix: ServerStatusText;
+    @IsDefined()
+    @ValidateNested()
+    @Type(() => CommandDescriptions)
+    declare commandDescriptions: CommandDescriptions;
 }
 
 class ServerStatusText {
@@ -25,4 +37,25 @@ class ServerStatusText {
     declare starting: string;
     @IsString()
     declare stopping: string;
+}
+
+class CommandDescriptions {
+    @IsString()
+    declare rootCommand: string;
+    @IsString()
+    declare serverCommand: string;
+    @IsString()
+    declare listCommand: string;
+    @IsString()
+    declare startCommand: string;
+    @IsString()
+    declare stopCommand: string;
+    @IsString()
+    declare statusCommand: string;
+    @IsString()
+    declare startCommandServerId: string;
+    @IsString()
+    declare stopCommandServerId: string;
+    @IsString()
+    declare statusCommandServerId: string;
 }

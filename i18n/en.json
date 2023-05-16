@@ -1,6 +1,9 @@
 {
     "serverShutdown": "The server {} has been shut down.",
     "serverList": "The following servers are available:\n\n{{#servers}}{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}\n\n{{/servers}}",
+    "serverStatus": "{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}",
+    "startCommandFeedback": "Starting server: **{{displayName}}** #{{id}}",
+    "stopCommandFeedback": "Stopping server: **{{displayName}}** #{{id}}",
     "statusEmoji": {
         "running": ":green_circle:",
         "starting": ":hourglass:",
@@ -12,5 +15,16 @@
         "starting": " (starting)",
         "stopping": " (stopping)",
         "stopped": ""
+    },
+    "commandDescriptions": {
+        "rootCommand": "Manage minecraft worlds",
+        "serverCommand": "Commands regarding minecraft servers",
+        "listCommand": "List available servers and if they are currently running",
+        "startCommand": "Start a specific server",
+        "stopCommand": "Stop a specific server",
+        "statusCommand": "Displays the status of a specific server",
+        "startCommandServerId": "Id of the server to start",
+        "stopCommandServerId": "Id of the server to stop",
+        "statusCommandServerId": "Id of the server in question"
     }
 }
