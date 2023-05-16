@@ -14,6 +14,7 @@ import { MinecraftServerStatusProviderService } from './minecraft/minecraft-serv
 import { RedisServerStatusPersistance } from './redis/redis-server-status-persistance';
 import { CliInterface } from './testing/cli-interface';
 import { HttpInterface } from './testing/http-interface';
+import { parse as parseJson } from 'json5';
 
 async function readConfigFile(): Promise<Configuration> {
     const configFilePath = process.env.CONFIG_FILE_PATH;
@@ -23,7 +24,7 @@ async function readConfigFile(): Promise<Configuration> {
     if (!fs.existsSync(configFilePath)) {
         throw new Error(`File ${configFilePath} does not exist`);
     }
-    const config = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
+    const config = parseJson(fs.readFileSync(configFilePath, 'utf8'));
     const configInstance = plainToClass(Configuration, config);
     await validateOrReject(configInstance)
         .catch((errors) => {
@@ -38,7 +39,7 @@ async function readI18nFile(language: string): Promise<I18n> {
     if (!fs.existsSync(i18nFilePath)) {
         throw new Error(`The language ${language} is not supported`);
     }
-    const i18n = JSON.parse(fs.readFileSync(i18nFilePath, 'utf8'));
+    const i18n = parseJson(fs.readFileSync(i18nFilePath, 'utf8'));
     const i18nInstance = plainToInstance(I18n, i18n);
     await validateOrReject(i18nInstance)
         .catch((errors) => {

@@ -1,0 +1,81 @@
+{
+    // Maximum amount of servers that should be running at the same time
+    "maxRunningServers": 2,
+    // The time no player is online until the server is stopped
+    "serverStopTimeoutMs": 200000,
+    // The language for discord messages. Available languages: en, de
+    "language": "en",
+    // kubernetes config
+    "kubernetes": {
+        // namespace where minecraft servers are deployed
+        "namespace": "minecord"
+        // Optional option to specify a kubeconfig file, if not specified the default kubeconfig will be used
+        // "configPath": ""
+    },
+    // List of minecraft servers controlled by discworldmc
+    "servers": [
+        {
+            // Unique id of the server
+            "id": "server1",
+            // Name of the kubernetes deployment of the server
+            "deploymentName": "minecraft-server-1",
+            // Name of the kubernetes service of the server
+            "serviceName": "minecraft-service-1",
+            // Port of the minecraft server, if not specified the default minecraft port will be used
+            // "servicePort": 25565
+            // Name of the server displayed in discord
+            "displayName": "Server 1"
+        },
+        {
+            "id": "server1",
+            "deploymentName": "minecraft-server-2",
+            "serviceName": "minecraft-service-2",
+            "displayName": "Server 2"
+        }
+    ],
+    // Discord configuration
+    "discord": {
+        // The app id of the discord bot
+        "appId" : "1234",
+        // The token of the discord bot
+        "token" : "secret",
+        // The id of the guild where the bot should be used
+        "guildId" : "5678"
+    },
+    // config for redis
+    "redis": {
+        "host": "redis"
+        // optional
+        // "port": 6379
+    },
+    // Role autorization for discord commands
+    // The permissions of each matching role will be combined
+    "roles": [ 
+        {
+            // The "default" role will be applyed to every user
+            "roleId": "default",
+            "permissions": [
+                // The permission to use the command "/dw server list"
+                "dw.server.list",
+                // The permission to use the command "/dw server status for every server. Replace * with the server id to only allow the command for a specific server"
+                "dw.server.status.*"
+            ]
+        },
+        {
+            // The id of a discord role
+            "roleId": "1234",
+            "permissions": [
+                // The permission to use the command "/dw server start for every server. Replace * with the server id to only allow the command for a specific server"
+                "dw.server.start.*"
+            ]
+        },
+        {
+            // The id of a discord role
+            "roleId": "9876",
+            "permissions": [
+                // The permission to use the command "/dw server stop for every server. Replace * with the server id to only allow the command for a specific server"
+                "dw.server.stop.*"
+            ]
+        }
+    ]
+}
