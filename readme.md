@@ -1,5 +1,16 @@
 # Discworldmc
 
+
+### Discord commands
+
+- `/dw server list` -> returns a list of all servers and if they are currently running
+- `/dw server start <server>` -> starts a server
+- `/dw server stop <server>` -> stops a server
+- `/dw server status <server>` -> returns a detailed status of a server
+
+
+## Installation
+
 ### Adding the bot to a server
 
 ```
@@ -12,9 +23,29 @@ Discord bot permissions:
 
 --> Permissions number: 274877908992
 
-### Discord commands
 
-- `/dw server list` -> returns a list of all servers and if they are currently running
-- `/dw server start <server>` -> starts a server
-- `/dw server stop <server>` -> stops a server
-- `/dw server status <server>` -> returns a detailed status of a server
+### Kubernetes Setup
+
+- have servers running as deployments in a kubernetes namespace
+- create a role with the following permissions for the namespace:
+
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps"]
+  resources: ["deployments/scale"]
+```
+
+- create a service account and add a role binding for the namespace.
+
+- create the config for the bot as a kubernetes secret, using the [config-example.json5](config-example.json5) file.
+
+- deploy discworldmc with the config mounted and provide the path to the configfile in the `CONFIG_FILE_PATH` variable.
