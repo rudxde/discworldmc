@@ -75,8 +75,6 @@ export class DiscordCommandsManager {
 
     async handleChatCommand(interaction: ChatInputCommandInteraction): Promise<void> {
         try {
-
-
             if (interaction.commandName !== this.commandData.name) {
                 throw new InvalidCommand(interaction.commandName);
             }
@@ -104,7 +102,9 @@ export class DiscordCommandsManager {
             throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup}`);
         } catch (err: unknown) {
             console.error(err);
-            if (err instanceof Error) {
+            if (err instanceof Error && interaction.replied) {
+                interaction.editReply(err.message);
+            } else if (err instanceof Error) {
                 interaction.reply(err.message);
             } else {
                 interaction.reply(String(err));
