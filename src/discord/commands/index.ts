@@ -121,6 +121,7 @@ export class DiscordCommandsManager {
                     ...server,
                     statusEmoji: this.getStatusEmoji(server.status),
                     statusSuffix: this.getStatusSuffix(server.status),
+                    isRunning: server.status === ServerStatus.RUNNING,
                 })),
             });
         await interaction.reply(message);
@@ -145,6 +146,7 @@ export class DiscordCommandsManager {
             ...status,
             statusEmoji: this.getStatusEmoji(status.status),
             statusSuffix: this.getStatusSuffix(status.status),
+            isRunning: status.status === ServerStatus.RUNNING,
         }));
     }
 

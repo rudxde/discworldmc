@@ -1,7 +1,7 @@
 {
     "serverShutdown": "Der Server {} wurde heruntergefahren.",
-    "serverList": "Die folgenden Server sind verfügbar:\n\n{{#servers}}{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}\n\n{{/servers}}",
-    "serverStatus": "{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}",
+    "serverList": "Die folgenden Server sind verfügbar:\n\n{{#servers}}{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}{{#isRunning}} ({{playerCount}}/{{maxPlayers}} Spieler){{/isRunning}}\n\n{{/servers}}",
+    "serverStatus": "{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}{{#isRunning}} ({{playerCount}}/{{maxPlayers}} Spieler){{/isRunning}}",
     "startCommandFeedback": "Starte Server: **{{displayName}}** #{{id}}",
     "stopCommandFeedback": "Fahre Server herunter: **{{displayName}}** #{{id}}",
     "statusEmoji": {
