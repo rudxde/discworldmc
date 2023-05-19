@@ -4,6 +4,7 @@
     "serverStatus": "{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}{{#isRunning}} ({{playerCount}}/{{maxPlayers}} Players){{/isRunning}}",
     "startCommandFeedback": "Starting server: **{{displayName}}** #{{id}}",
     "stopCommandFeedback": "Stopping server: **{{displayName}}** #{{id}}",
+    "pendingAnswer": "One moment please...",
     "statusEmoji": {
         "running": ":green_circle:",
         "starting": ":hourglass:",

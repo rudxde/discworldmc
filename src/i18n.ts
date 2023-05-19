@@ -12,7 +12,8 @@ export class I18n {
     declare startCommandFeedback: string;
     @IsString()
     declare stopCommandFeedback: string;
-
+    @IsString()
+    declare pendingAnswer: string;
 
     @IsDefined()
     @ValidateNested()

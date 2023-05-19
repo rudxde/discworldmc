@@ -81,6 +81,7 @@ export class DiscordCommandsManager {
             const subcommandGroup = interaction.options.getSubcommandGroup(true);
             if (subcommandGroup === 'server') {
                 const subcommand = interaction.options.getSubcommand(true);
+                await interaction.reply(this.i18n.pendingAnswer);
                 if (subcommand === 'list') {
                     await this.listServers(interaction);
                     return;
@@ -124,25 +125,25 @@ export class DiscordCommandsManager {
                     isRunning: server.status === ServerStatus.RUNNING,
                 })),
             });
-        await interaction.reply(message);
+        await interaction.editReply(message);
     }
 
     private async startServer(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
-        await interaction.reply(renderTemplate(this.i18n.startCommandFeedback, serverInfo));
         await this.minecraftServerProvider.startServer(serverInfo.id);
+        await interaction.editReply(renderTemplate(this.i18n.startCommandFeedback, serverInfo));
     }
 
     private async stopServer(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
-        await interaction.reply(renderTemplate(this.i18n.stopCommandFeedback, serverInfo));
         await this.minecraftServerProvider.stopServer(serverInfo.id);
+        await interaction.editReply(renderTemplate(this.i18n.stopCommandFeedback, serverInfo));
     }
 
     private async getServerStatus(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
         const status = await this.minecraftServerProvider.getServerStatus(serverInfo.id);
-        await interaction.reply(renderTemplate(this.i18n.serverStatus, {
+        await interaction.editReply(renderTemplate(this.i18n.serverStatus, {
             ...status,
             statusEmoji: this.getStatusEmoji(status.status),
             statusSuffix: this.getStatusSuffix(status.status),
