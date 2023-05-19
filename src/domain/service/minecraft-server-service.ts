@@ -47,7 +47,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
         let playerCount = 0;
         let maxPlayers = 0;
         if (status === ServerStatus.RUNNING) {
-            const pingResult = await this.minecraftPlayerCountProvider.getServerPing(serverConfigEntry.serviceName);
+            const pingResult = await this.minecraftPlayerCountProvider.getServerPing(serverConfigEntry.id);
             playerCount = pingResult.playerCount;
             maxPlayers = pingResult.maxPlayers;
         }
@@ -99,7 +99,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
             let playerCount = 0;
             let maxPlayers = 0;
             if (status === ServerStatus.RUNNING) {
-                const pingResult = await this.minecraftPlayerCountProvider.getServerPing(server.serviceName)
+                const pingResult = await this.minecraftPlayerCountProvider.getServerPing(server.id)
                     .catch((error) => {
                         console.error(error);
                         return { playerCount: 0, maxPlayers: 0 };
