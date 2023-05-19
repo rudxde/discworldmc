@@ -3,6 +3,8 @@
     "maxRunningServers": 2,
     // The time no player is online until the server is stopped
     "serverStopTimeoutMs": 200000,
+    // Optional: The interval in which each Minecraft server is pinged to check if it is still running
+    // "serverPingIntervalMs": 10000,
     // The language for discord messages. Available languages: en, de
     "language": "en",
     // kubernetes config

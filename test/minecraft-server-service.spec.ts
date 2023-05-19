@@ -65,6 +65,7 @@ describe('MinecraftServerService', () => {
                 port: 1234,
             },
             serverStopTimeoutMs: 1000,
+            serverPingIntervalMs: 1000,
             servers: [],
             roles: [],
         };

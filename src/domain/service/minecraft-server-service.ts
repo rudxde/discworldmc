@@ -20,7 +20,10 @@ export class MinecraftServerService implements MinecraftServerProvider {
     ) { }
 
     start(): void {
-        this.scheduledInterval = setInterval(() => this.scheduledCheckServerTasks().catch((error) => console.error(error)), 1000);
+        this.scheduledInterval = setInterval(
+            () => this.scheduledCheckServerTasks().catch((error) => console.error(error)), 
+            this.configuration.serverPingIntervalMs,
+        );
     }
 
     stop(): void {

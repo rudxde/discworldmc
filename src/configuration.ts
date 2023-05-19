@@ -6,31 +6,15 @@ import { RedisConfig } from './redis/config';
 import { DiscordConfiguration } from './discord/config';
 
 export class Configuration {
-    @IsDefined()
-    @ValidateNested()
-    @Type(() => KubernetesConfig)
-    public declare kubernetes: KubernetesConfig;
-
-    @ValidateNested()
-    @Type(() => DiscordConfiguration)
-    declare discord?: DiscordConfiguration;
-
     /**
-     * A list of servers.
-     *
-     * @type {ServerConfiguration[]}
-     * @memberof Configuration
-     */
-    @IsDefined()
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => ServerConfiguration)
-    declare servers: ServerConfiguration[];
-
-    @IsDefined()
-    @ValidateNested()
-    @Type(() => RedisConfig)
-    declare redis: RedisConfig;
+      * Use another interface than than discord for testing purposes.
+      *
+      * @type {string}
+      * @memberof Configuration
+      */
+    @IsString()
+    @IsIn(['discord', 'cli', 'http'])
+    public interface: string = 'discord';
 
     /**
      * The limit of servers that can be running at the same time.
@@ -46,20 +30,44 @@ export class Configuration {
      */
     @IsNumber()
     declare serverStopTimeoutMs: number;
+    
+    /**
+     * The interval in which each running server is checked.
+     *
+     * @type {number}
+     * @memberof Configuration
+     */
+    @IsNumber()
+    public serverPingIntervalMs: number = 10000;
 
     @IsString()
     @IsIn(['de', 'en'])
     declare language: string;
 
+    @IsDefined()
+    @ValidateNested()
+    @Type(() => KubernetesConfig)
+    public declare kubernetes: KubernetesConfig;
+
+    @ValidateNested()
+    @Type(() => DiscordConfiguration)
+    declare discord?: DiscordConfiguration;
     /**
-     * Use another interface than than discord for testing purposes.
-     *
-     * @type {string}
-     * @memberof Configuration
-     */
-    @IsString()
-    @IsIn(['discord', 'cli', 'http'])
-    public interface: string = 'discord';
+    * A list of servers.
+    *
+    * @type {ServerConfiguration[]}
+    * @memberof Configuration
+    */
+    @IsDefined()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => ServerConfiguration)
+    declare servers: ServerConfiguration[];
+
+    @IsDefined()
+    @ValidateNested()
+    @Type(() => RedisConfig)
+    declare redis: RedisConfig;
 
     @ValidateNested({ each: true })
     @IsDefined()
