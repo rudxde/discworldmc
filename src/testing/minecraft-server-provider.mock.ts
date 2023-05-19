@@ -4,11 +4,11 @@ import { ServerNotFound } from '../error/server-not-found';
 
 export class MinecraftServerProviderMock implements MinecraftServerProvider {
     private readonly servers: MinecraftServerStatus[] = [
-        { id: 'lobby', displayName: 'Lobby', status: ServerStatus.RUNNING },
-        { id: 'pvp', displayName: 'PvP Arena', status: ServerStatus.STOPPED },
-        { id: 's1', displayName: 'Survival World 1', status: ServerStatus.STOPPED },
-        { id: 's2', displayName: 'Survival World 2', status: ServerStatus.RUNNING },
-        { id: 'creative', displayName: 'Creative World', status: ServerStatus.STOPPED },
+        { id: 'lobby', displayName: 'Lobby', status: ServerStatus.RUNNING, maxPlayers: 0, playerCount: 20 },
+        { id: 'pvp', displayName: 'PvP Arena', status: ServerStatus.STOPPED, maxPlayers: 0, playerCount: 0 },
+        { id: 's1', displayName: 'Survival World 1', status: ServerStatus.STOPPED, maxPlayers: 0, playerCount: 0 },
+        { id: 's2', displayName: 'Survival World 2', status: ServerStatus.RUNNING, maxPlayers: 0, playerCount: 20 },
+        { id: 'creative', displayName: 'Creative World', status: ServerStatus.STOPPED, maxPlayers: 0, playerCount: 0 },
     ];
 
     async getServerStatus(serverId: string): Promise<MinecraftServerStatus> {

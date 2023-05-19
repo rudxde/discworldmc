@@ -12,4 +12,6 @@ export interface MinecraftServerInfo {
 
 export interface MinecraftServerStatus extends MinecraftServerInfo {
     status: ServerStatus;
+    playerCount: number;
+    maxPlayers: number;
 }

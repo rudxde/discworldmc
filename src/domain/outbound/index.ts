@@ -1,8 +1,9 @@
 import type { KubernetesDeployment } from '../entities/kubernetes';
+import { MinecraftServerPing } from '../entities/minecraft-server-ping';
 import type { ServerStatus } from '../entities/server';
 
 export interface MinecraftServerStatusProvider {
-    getPlayerCount(serverId: string): Promise<number>;
+    getServerPing(serverId: string): Promise<MinecraftServerPing>;
 }
 
 export interface MinecraftServerStatusPersistenceProvider {

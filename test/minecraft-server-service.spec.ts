@@ -22,7 +22,8 @@ interface TestThisContext {
 describe('MinecraftServerService', () => {
     beforeEach(function (this: TestThisContext) {
 
-        this.minecraftPlayerCountProviderGetPlayerCountSpy = jasmine.createSpy(`MinecraftServerStatusProvider#getPlayerCount`);
+        this.minecraftPlayerCountProviderGetPlayerCountSpy = jasmine.createSpy(`MinecraftServerStatusProvider#getPlayerCount`)
+            .and.returnValue(Promise.resolve({ playerCount: 0, maxPlayers: 20 }));
         this.minecraftServerStatusPersistenceSetPlayersLastSeenSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#setPlayersLastSeen`);
         this.minecraftServerStatusPersistenceGetPlayersLastSeenSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#getPlayersLastSeen`);
         this.minecraftServerStatusPersistenceSetServerStatusSpy = jasmine.createSpy(`MinecraftServerStatusPersistenceProvider#setServerStatus`);
@@ -33,7 +34,7 @@ describe('MinecraftServerService', () => {
 
 
         this.minecraftPlayerCountProvider = {
-            getPlayerCount: this.minecraftPlayerCountProviderGetPlayerCountSpy,
+            getServerPing: this.minecraftPlayerCountProviderGetPlayerCountSpy,
         };
 
         this.minecraftServerStatusPersistence = {
@@ -109,6 +110,8 @@ describe('MinecraftServerService', () => {
                 id: 'server-id',
                 displayName: 'display-name',
                 status: ServerStatus.RUNNING,
+                maxPlayers: 20,
+                playerCount: 0,
             });
         });
         it('should return the starting server status from the deployment', async function (this: TestThisContext) {
@@ -130,6 +133,8 @@ describe('MinecraftServerService', () => {
                 id: 'server-id',
                 displayName: 'display-name',
                 status: ServerStatus.STARTING,
+                maxPlayers: 0,
+                playerCount: 0,
             });
         });
         it('should return the stopping server status from the deployment', async function (this: TestThisContext) {
@@ -151,6 +156,8 @@ describe('MinecraftServerService', () => {
                 id: 'server-id',
                 displayName: 'display-name',
                 status: ServerStatus.STOPPING,
+                maxPlayers: 0,
+                playerCount: 0,
             });
         });
         it('should return the stopped server status from the deployment', async function (this: TestThisContext) {
@@ -172,6 +179,8 @@ describe('MinecraftServerService', () => {
                 id: 'server-id',
                 displayName: 'display-name',
                 status: ServerStatus.STOPPED,
+                maxPlayers: 0,
+                playerCount: 0,
             });
         });
         it('should throw ServerNotFound error when no deployment was found', async function (this: TestThisContext) {

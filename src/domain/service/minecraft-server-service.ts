@@ -21,7 +21,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
 
     start(): void {
         this.scheduledInterval = setInterval(
-            () => this.scheduledCheckServerTasks().catch((error) => console.error(error)), 
+            () => this.scheduledCheckServerTasks().catch((error) => console.error(error)),
             this.configuration.serverPingIntervalMs,
         );
     }
@@ -44,10 +44,19 @@ export class MinecraftServerService implements MinecraftServerProvider {
             throw new ServerNotFound(serverId);
         }
         const status = this.getStatusForDeployment(deployment);
+        let playerCount = 0;
+        let maxPlayers = 0;
+        if (status === ServerStatus.RUNNING) {
+            const pingResult = await this.minecraftPlayerCountProvider.getServerPing(serverConfigEntry.serviceName);
+            playerCount = pingResult.playerCount;
+            maxPlayers = pingResult.maxPlayers;
+        }
         return {
             id: serverId,
             displayName: serverConfigEntry.displayName,
             status,
+            playerCount,
+            maxPlayers,
         };
     }
 
@@ -75,21 +84,33 @@ export class MinecraftServerService implements MinecraftServerProvider {
 
     async getServers(): Promise<MinecraftServerStatus[]> {
         const deployments = await this.kubernetesProvider.getDeploymentsInNamespace();
-        const status: MinecraftServerStatus[] = this.configuration.servers.map((server) => {
+        const status: MinecraftServerStatus[] = await Promise.all(this.configuration.servers.map(async (server) => {
             const deployment = deployments.find((d) => d.name === server.deploymentName);
             if (!deployment) {
-                return {
+                return <MinecraftServerStatus>{
                     id: server.id,
                     displayName: server.displayName,
                     status: ServerStatus.STOPPED,
+                    maxPlayers: 0,
+                    playerCount: 0,
                 };
             }
-            return {
+            const status = this.getStatusForDeployment(deployment);
+            let playerCount = 0;
+            let maxPlayers = 0;
+            if (status === ServerStatus.RUNNING) {
+                const pingResult = await this.minecraftPlayerCountProvider.getServerPing(server.serviceName);
+                playerCount = pingResult.playerCount;
+                maxPlayers = pingResult.maxPlayers;
+            }
+            return <MinecraftServerStatus>{
                 id: server.id,
                 displayName: server.displayName,
-                status: this.getStatusForDeployment(deployment),
+                status: status,
+                playerCount,
+                maxPlayers,
             };
-        });
+        }));
         return status;
     }
 
@@ -151,8 +172,8 @@ export class MinecraftServerService implements MinecraftServerProvider {
         const now = new Date();
         for (const server of runningServers) {
             try {
-                const playerCount = await this.minecraftPlayerCountProvider.getPlayerCount(server.id);
-                if (playerCount !== 0) {
+                const pingResult = await this.minecraftPlayerCountProvider.getServerPing(server.id);
+                if (pingResult.playerCount !== 0) {
                     await this.minecraftServerStatusPersistence.setPlayersLastSeen(server.id, now);
                 }
                 const lastSeen = await this.minecraftServerStatusPersistence.getPlayersLastSeen(server.id) ?? now;
