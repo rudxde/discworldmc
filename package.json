@@ -1,9 +1,21 @@
 {
   "name": "discworldmc",
   "version": "0.0.0",
-  "description": "",
-  "main": "index",
-  "types": "index",
+  "description": "A Discord bot to start and stop minecraft servers deployed in a kubernetes cluster.",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "contributors": [
+    "stovemeerkat",
+    "rudxde"
+  ],
+  "repository": "https://github.com/rudxde/discworldmc",
+  "bugs": "https://github.com/rudxde/discworldmc/issues",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://github.com/rudxde/discworldmc/blob/main/LICENSE"
+    }
+  ],
   "scripts": {
     "start": "node dist/main.js",
     "build": "tsc -p .",
@@ -11,9 +23,6 @@
     "test:coverage": "ts-node -P ./tsconfig.test.json node_modules/nyc/bin/nyc.js npm run test",
     "lint": "eslint -c .eslintrc.js --ext .ts ."
   },
-  "author": "rudxde",
-  "repository": "",
-  "bugs": "",
   "dependencies": {
     "@kubernetes/client-node": "^0.18.1",
     "class-transformer": "^0.5.1",
@@ -44,5 +53,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "license": "Apache-2.0"
+  "engines": {
+    "node": ">=18",
+    "npm": ">=8"
+  }
 }
