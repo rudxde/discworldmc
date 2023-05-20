@@ -16,6 +16,10 @@ export class AuthProviderService implements AuthProvider {
 
     private getPermissions(roleIds: string[]): string[] {
         const permissions: string[] = [];
+        const defaultRoleConfig = this.config.find((config) => config.roleId === 'default');
+        if (defaultRoleConfig) {
+            permissions.push(...defaultRoleConfig.permissions);
+        }
         for (const roleId of roleIds) {
             const roleConfig = this.config.find((config) => config.roleId === roleId);
             if (!roleConfig) {
