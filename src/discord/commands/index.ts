@@ -2,13 +2,12 @@ import {
     ChatInputCommandInteraction, RESTPostAPIApplicationCommandsJSONBody,
     SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import { MinecraftServerProvider } from '../../domain/inbound';
 import { InvalidCommand } from '../../error/invalid-command';
 import { MinecraftServerInfo, ServerStatus } from '../../domain/entities/server';
 import { ServerNotFound } from '../../error/server-not-found';
 import { I18n } from '../../i18n';
-import { AuthProvider } from '../../auth/inbound';
 import { render as renderTemplate } from 'mustache';
+import { AuthorizedMinecraftServerProvider } from '../../auth/inbound';
 
 
 export class DiscordCommandsManager {
@@ -16,9 +15,8 @@ export class DiscordCommandsManager {
     private readonly serverInfos: MinecraftServerInfo[];
 
     constructor(
-        private readonly minecraftServerProvider: MinecraftServerProvider,
+        private readonly minecraftServerProvider: AuthorizedMinecraftServerProvider,
         private readonly i18n: I18n,
-        private readonly authProvider: AuthProvider,
     ) {
         this.serverInfos = this.minecraftServerProvider.getServerInfos();
         const serverChoices = this.serverInfos.map(server => ({
@@ -114,7 +112,7 @@ export class DiscordCommandsManager {
     }
 
     private async listServers(interaction: ChatInputCommandInteraction): Promise<void> {
-        const servers = await this.minecraftServerProvider.getServers();
+        const servers = await this.minecraftServerProvider.getServers([]);
 
         const message = renderTemplate(
             this.i18n.serverList, {
@@ -130,19 +128,19 @@ export class DiscordCommandsManager {
 
     private async startServer(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
-        await this.minecraftServerProvider.startServer(serverInfo.id);
+        await this.minecraftServerProvider.startServer(serverInfo.id, []);
         await interaction.editReply(renderTemplate(this.i18n.startCommandFeedback, serverInfo));
     }
 
     private async stopServer(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
-        await this.minecraftServerProvider.stopServer(serverInfo.id);
+        await this.minecraftServerProvider.stopServer(serverInfo.id, []);
         await interaction.editReply(renderTemplate(this.i18n.stopCommandFeedback, serverInfo));
     }
 
     private async getServerStatus(interaction: ChatInputCommandInteraction): Promise<void> {
         const serverInfo = this.getServerInfo(interaction);
-        const status = await this.minecraftServerProvider.getServerStatus(serverInfo.id);
+        const status = await this.minecraftServerProvider.getServerStatus(serverInfo.id, []);
         await interaction.editReply(renderTemplate(this.i18n.serverStatus, {
             ...status,
             statusEmoji: this.getStatusEmoji(status.status),

@@ -15,6 +15,7 @@ import { RedisServerStatusPersistance } from './redis/redis-server-status-persis
 import { CliInterface } from './testing/cli-interface';
 import { HttpInterface } from './testing/http-interface';
 import { parse as parseJson } from 'json5';
+import { AuthorizedMinecraftServerServiceMiddleware } from './auth/service/authorized-minecraft-server-service-middleware';
 
 async function readConfigFile(): Promise<Configuration> {
     const configFilePath = process.env.CONFIG_FILE_PATH;
@@ -57,6 +58,7 @@ async function main(): Promise<void> {
     const minecraftServerStatusProviderService = new MinecraftServerStatusProviderService(config);
     const minecraftServerService = new MinecraftServerService(minecraftServerStatusProviderService, redisServerPersistance, kubernetes, config);
     const authProviderService = new AuthProviderService(config.roles);
+    const authorizedMinecraftServerServiceMiddleware = new AuthorizedMinecraftServerServiceMiddleware(minecraftServerService, authProviderService);
     minecraftServerService.start();
     console.log(`discworldmc started successfully`);
 
@@ -69,7 +71,7 @@ async function main(): Promise<void> {
             if (!config.discord) {
                 throw new Error('For discord interface the discord configuration key is required!');
             }
-            const discordService = new DiscordService(config.discord, minecraftServerService, i18n, authProviderService);
+            const discordService = new DiscordService(config.discord, authorizedMinecraftServerServiceMiddleware, i18n);
             await discordService.start();
             break;
         case 'http':
