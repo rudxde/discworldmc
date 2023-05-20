@@ -54,3 +54,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: type=registry,ref=rudxde/discworldmc:buildcache
           cache-to: type=registry,ref=rudxde/discworldmc:buildcache,mode=max
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: rudxde/discworldmc
+          readme-filepath: ./readme.md
