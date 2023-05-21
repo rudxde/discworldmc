@@ -1,5 +1,5 @@
 import {
-    ChatInputCommandInteraction, RESTPostAPIApplicationCommandsJSONBody,
+    ChatInputCommandInteraction, GuildMember, RESTPostAPIApplicationCommandsJSONBody,
     SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
 import { InvalidCommand } from '../../error/invalid-command';
@@ -112,7 +112,8 @@ export class DiscordCommandsManager {
     }
 
     private async listServers(interaction: ChatInputCommandInteraction): Promise<void> {
-        const servers = await this.minecraftServerProvider.getServers([]);
+        const memberRoles = this.getMemberRoles(interaction);
+        const servers = await this.minecraftServerProvider.getServers(memberRoles);
 
         const message = renderTemplate(
             this.i18n.serverList, {
@@ -127,26 +128,37 @@ export class DiscordCommandsManager {
     }
 
     private async startServer(interaction: ChatInputCommandInteraction): Promise<void> {
+        const memberRoles = this.getMemberRoles(interaction);
         const serverInfo = this.getServerInfo(interaction);
-        await this.minecraftServerProvider.startServer(serverInfo.id, []);
+        await this.minecraftServerProvider.startServer(serverInfo.id, memberRoles);
         await interaction.editReply(renderTemplate(this.i18n.startCommandFeedback, serverInfo));
     }
 
     private async stopServer(interaction: ChatInputCommandInteraction): Promise<void> {
+        const memberRoles = this.getMemberRoles(interaction);
         const serverInfo = this.getServerInfo(interaction);
-        await this.minecraftServerProvider.stopServer(serverInfo.id, []);
+        await this.minecraftServerProvider.stopServer(serverInfo.id, memberRoles);
         await interaction.editReply(renderTemplate(this.i18n.stopCommandFeedback, serverInfo));
     }
 
     private async getServerStatus(interaction: ChatInputCommandInteraction): Promise<void> {
+        const memberRoles = this.getMemberRoles(interaction);
         const serverInfo = this.getServerInfo(interaction);
-        const status = await this.minecraftServerProvider.getServerStatus(serverInfo.id, []);
+        const status = await this.minecraftServerProvider.getServerStatus(serverInfo.id, memberRoles);
         await interaction.editReply(renderTemplate(this.i18n.serverStatus, {
             ...status,
             statusEmoji: this.getStatusEmoji(status.status),
             statusSuffix: this.getStatusSuffix(status.status),
             isRunning: status.status === ServerStatus.RUNNING,
         }));
+    }
+
+    private getMemberRoles(interaction: ChatInputCommandInteraction): string[] {
+        const member = interaction.member;
+        if (!member || member instanceof GuildMember) {
+            throw new Error('Received interaction with unexpeted type for \'member\'');
+        }
+        return member.roles;
     }
 
     private getServerInfo(interaction: ChatInputCommandInteraction): MinecraftServerInfo {
