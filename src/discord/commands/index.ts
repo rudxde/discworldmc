@@ -2,12 +2,13 @@ import {
     ChatInputCommandInteraction, GuildMember, RESTPostAPIApplicationCommandsJSONBody,
     SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import { InvalidCommand } from '../../error/invalid-command';
-import { MinecraftServerInfo, ServerStatus } from '../../domain/entities/server';
-import { ServerNotFound } from '../../error/server-not-found';
-import { I18n } from '../../i18n';
 import { render as renderTemplate } from 'mustache';
 import { AuthorizedMinecraftServerProvider } from '../../auth/inbound';
+import { MinecraftServerInfo, ServerStatus } from '../../domain/entities/server';
+import { BaseError } from '../../error/base-error';
+import { InvalidCommand } from '../../error/invalid-command';
+import { ServerNotFound } from '../../error/server-not-found';
+import { I18n } from '../../i18n';
 
 
 export class DiscordCommandsManager {
@@ -101,12 +102,16 @@ export class DiscordCommandsManager {
             throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup}`);
         } catch (err: unknown) {
             console.error(err);
-            if (err instanceof Error && interaction.replied) {
-                interaction.editReply(err.message);
-            } else if (err instanceof Error) {
-                interaction.reply(err.message);
+            let message: string;
+            if (err instanceof BaseError) {
+                message = this.i18n.errors[err.i18nEntry];
             } else {
-                interaction.reply(String(err));
+                message = this.i18n.errors.unknown;
+            }
+            if (interaction.replied) {
+                await interaction.editReply(message);
+            } else {
+                await interaction.reply(message);
             }
         }
     }

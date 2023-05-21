@@ -1,7 +1,10 @@
 import { Configuration, ServerConfiguration } from '../../configuration';
+import { ServerAlreadyRunning } from '../../error/server-already-running';
+import { ServerAlreadyStopped } from '../../error/server-already-stopped';
+import { ServerIsStarting } from '../../error/server-is-starting';
+import { ServerIsStopping } from '../../error/server-is-stopping';
 import { ServerNotFound } from '../../error/server-not-found';
 import { ServerStartLimitError } from '../../error/server-start-limit';
-import { WrongState } from '../../error/wrong-state';
 import { KubernetesDeployment } from '../entities/kubernetes';
 import { MinecraftServerInfo, MinecraftServerStatus, ServerStatus } from '../entities/server';
 import { MinecraftServerProvider, OnServerStopListener, ServerEvent } from '../inbound';
@@ -61,11 +64,17 @@ export class MinecraftServerService implements MinecraftServerProvider {
     }
 
     async startServer(serverId: string): Promise<void> {
-        await this.ensureServerLimitNotReached();
         const status = await this.getServerStatus(serverId);
-        if (status.status !== 'stopped') {
-            throw new WrongState(`Server ${serverId} is not in status stopped`);
+        if (status.status === ServerStatus.RUNNING) {
+            throw new ServerAlreadyRunning(serverId);
         }
+        if (status.status === ServerStatus.STARTING) {
+            throw new ServerIsStarting(serverId);
+        }
+        if (status.status === ServerStatus.STOPPING) {
+            throw new ServerIsStopping(serverId);
+        }
+        await this.ensureServerLimitNotReached(serverId);
         const serverConfigEntry = this.getServerConfig(serverId);
         await this.kubernetesProvider.scaleDeployment(serverConfigEntry.deploymentName, 1);
         await this.minecraftServerStatusPersistence.setPlayersLastSeen(serverId, new Date());
@@ -74,8 +83,14 @@ export class MinecraftServerService implements MinecraftServerProvider {
 
     async stopServer(serverId: string): Promise<void> {
         const status = await this.getServerStatus(serverId);
-        if (status.status !== 'running') {
-            throw new WrongState(`Server ${serverId} is not in status running`);
+        if (status.status === ServerStatus.STOPPED) {
+            throw new ServerAlreadyStopped(serverId);
+        }
+        if (status.status === ServerStatus.STARTING) {
+            throw new ServerIsStarting(serverId);
+        }
+        if (status.status === ServerStatus.STOPPING) {
+            throw new ServerIsStopping(serverId);
         }
         const serverConfigEntry = this.getServerConfig(serverId);
         await this.kubernetesProvider.scaleDeployment(serverConfigEntry.deploymentName, 0);
@@ -129,7 +144,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
         this.onServerStopListeners.push(listener);
     }
 
-    private async ensureServerLimitNotReached(): Promise<void> {
+    private async ensureServerLimitNotReached(startingServerId: string): Promise<void> {
         const servers = await this.getServers();
         const runningServers = servers.filter(
             (server) =>
@@ -138,7 +153,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
                 || server.status === ServerStatus.STOPPING,
         );
         if (runningServers.length >= this.configuration.maxRunningServers) {
-            throw new ServerStartLimitError();
+            throw new ServerStartLimitError(startingServerId, this.configuration.maxRunningServers);
         }
     }
 

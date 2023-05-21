@@ -1,9 +1,11 @@
-export class ServerNotFound extends Error {
+import { BaseError } from './base-error';
 
-    serverId: string;
+export class ServerNotFound extends BaseError {
+    readonly i18nEntry = 'serverNotFound';
 
-    constructor(serverId: string) {
+    constructor(
+        public serverId: string,
+    ) {
         super(`Server not found: ${serverId}`);
-        this.serverId = serverId;
     }
 }
