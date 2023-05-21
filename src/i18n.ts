@@ -27,6 +27,10 @@ export class I18n {
     @ValidateNested()
     @Type(() => CommandDescriptions)
     declare commandDescriptions: CommandDescriptions;
+    @IsDefined()
+    @ValidateNested()
+    @Type(() => Errors)
+    declare errors: Errors;
 }
 
 class ServerStatusText {
@@ -59,4 +63,25 @@ class CommandDescriptions {
     declare stopCommandServerId: string;
     @IsString()
     declare statusCommandServerId: string;
+}
+
+class Errors {
+    @IsString()
+    declare unknown: string;
+    @IsString()
+    declare unauthorized: string;
+    @IsString()
+    declare invalidCommand: string;
+    @IsString()
+    declare serverNotFound: string;
+    @IsString()
+    declare serverAlreadyRunning: string;
+    @IsString()
+    declare serverAlreadyStopped: string;
+    @IsString()
+    declare serverIsStopping: string;
+    @IsString()
+    declare serverIsStarting: string;
+    @IsString()
+    declare serverLimitReached: string;
 }

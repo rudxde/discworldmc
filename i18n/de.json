@@ -27,5 +27,15 @@
         "startCommandServerId": "ID des zu startenden Servers",
         "stopCommandServerId": "ID des zu stoppenden Servers",
         "statusCommandServerId": "ID des betreffenden Servers"
+    },
+    "errors": {
+        "invalidCommand": "Der eingegebene Befehl ist ungültig.",
+        "unauthorized": "Du bist nicht berechtigt, diesen Befehl auszuführen.",
+        "serverNotFound": "Der Server '{{serverId}}' wurde nicht gefunden.",
+        "serverAlreadyRunning": "Der Server '{{serverId}}' läuft bereits.",
+        "serverAlreadyStopped": "Der Server '{{serverId}}' ist bereits gestoppt.",
+        "serverIsStopping": "Der Server '{{serverId}}' wird gerade heruntergefahren.",
+        "serverIsStarting": "Der Server '{{serverId}}' wird gerade gestartet.",
+        "serverLimitReached": "Der Server '{{serverId}}' konnte nicht gestartet werden, da die maximale Anzahl von Servern ({{limit}}) erreicht wurde."
     }
 }
