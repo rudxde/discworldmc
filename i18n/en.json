@@ -29,6 +29,7 @@
         "statusCommandServerId": "Id of the server in question"
     },
     "errors": {
+        "unknown": "An unknown error occurred.",
         "invalidCommand": "The command you entered is invalid.",
         "unauthorized": "You are not authorized to use this command.",
         "serverNotFound": "The server '{{serverId}}' was not found.",
