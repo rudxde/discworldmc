@@ -127,6 +127,60 @@ spec:
 <br>
 By following these steps, you can successfully integrate Discworldmc with your Kubernetes environment, allowing you to manage your Minecraft servers using Discord commands.
 
+
+## Configuration
+
+### Roles and permissions
+
+The logic of the permissions in the provided role configuration is based on a hierarchical structure where the presence of an asterisk (*) at any part of the permission grants access to all sub-permissions within that category.
+
+Let's consider the example role configuration again:
+```json5
+{
+  // [...]
+  "roles": [
+    {
+      "roleId": "default",
+      "permissions": [
+        "dw.server.list",
+        "dw.server.status.*"
+      ]
+    },
+    {
+      "roleId": "<role id>",
+      "permissions": [
+        "dw.server.start.*"
+      ]
+    },
+    {
+      "roleId": "<role id>",
+      "permissions": [
+        "dw.server.start.server1",
+        "dw.server.start.server2"
+      ]
+    },
+    {
+      "roleId": "<role id>",
+      "permissions": [
+        "dw.server.stop.*"
+      ]
+    }
+  ]
+}
+```
+
+In this configuration:
+
+* The default role has the permission `dw.server.list`, which allows users with this role to use the `/dw server list` command. Additionally, it has the permission `dw.server.status.*`. The asterisk (`*`) at the end indicates that this role has access to all sub-permissions under the `dw.server.status` category. For example, it grants access to commands like `/dw server status <server_id>` for any server.
+
+* The `<role id>` role (replace `<role id>` with the actual Discord role ID) has the permission `dw.server.start.*`. Again, the asterisk (`*`) at the end indicates that this role has access to all sub-permissions under the `dw.server.start` category. It allows users with this role to use commands like `/dw server start <server_id>` for any server.
+
+* The`<role id>`role (replace`<role id>`with the actual Discord role ID) now has explicit permissions for starting two specific servers: `dw.server.start.server1` and `dw.server.start.server2`. This means users with this role can use the `/dw server start server1` and `/dw server start server2` commands, but not other server start commands.
+
+* The `<role id>` role (replace `<role id>` with the actual Discord role ID) has the permission `dw.server.stop.*`. This permission grants access to all sub-permissions under the `dw.server.stop` category, allowing users with this role to use commands like `/dw server stop <server_id>` for any server.
+
+In summary, when a role is assigned a permission that ends with an asterisk (`*`), it implies that the role has access to all sub-permissions under that category. This wildcard-based approach simplifies the permission management by granting broader access to related commands without explicitly listing each sub-permission.
+
 ## Contributing
 
 We welcome contributions to Discworldmc. If you encounter any issues or have ideas for improvements, please open an issue or submit a pull request on the [GitHub repository](https://github.com/rudxde/discworldmc).

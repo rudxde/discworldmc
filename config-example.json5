@@ -65,7 +65,7 @@
         },
         {
             // The id of a discord role
-            "roleId": "1234",
+            "roleId": "<role id>",
             "permissions": [
                 // The permission to use the command "/dw server start for every server. Replace * with the server id to only allow the command for a specific server"
                 "dw.server.start.*"
@@ -73,7 +73,7 @@
         },
         {
             // The id of a discord role
-            "roleId": "9876",
+            "roleId": "<role id>",
             "permissions": [
                 // The permission to use the command "/dw server stop for every server. Replace * with the server id to only allow the command for a specific server"
                 "dw.server.stop.*"
