@@ -104,7 +104,7 @@ export class DiscordCommandsManager {
             console.error(err);
             let message: string;
             if (err instanceof BaseError) {
-                message = this.i18n.errors[err.i18nEntry];
+                message = renderTemplate(this.i18n.errors[err.i18nEntry], err);
             } else {
                 message = this.i18n.errors.unknown;
             }
