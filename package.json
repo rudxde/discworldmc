@@ -17,7 +17,7 @@
     }
   ],
   "scripts": {
-    "start": "node dist/main.js",
+    "start": "node --enable-source-maps dist/main.js",
     "build": "tsc -p .",
     "test": "ts-node -P ./tsconfig.test.json node_modules/jasmine/bin/jasmine --config=jasmine.json",
     "test:coverage": "ts-node -P ./tsconfig.test.json node_modules/nyc/bin/nyc.js npm run test",
