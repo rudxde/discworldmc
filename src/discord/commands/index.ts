@@ -80,7 +80,7 @@ export class DiscordCommandsManager {
             const subcommandGroup = interaction.options.getSubcommandGroup(true);
             if (subcommandGroup === 'server') {
                 const subcommand = interaction.options.getSubcommand(true);
-                await interaction.reply(this.i18n.pendingAnswer);
+                await interaction.deferReply();
                 if (subcommand === 'list') {
                     await this.listServers(interaction);
                     return;
@@ -108,11 +108,7 @@ export class DiscordCommandsManager {
             } else {
                 message = this.i18n.errors.unknown;
             }
-            if (interaction.replied) {
-                await interaction.editReply(message);
-            } else {
-                await interaction.reply(message);
-            }
+            await this.replyOrEditInteraction(interaction, message);
         }
     }
 
@@ -129,28 +125,28 @@ export class DiscordCommandsManager {
                     isRunning: server.status === ServerStatus.RUNNING,
                 })),
             });
-        await interaction.editReply(message);
+        await this.replyOrEditInteraction(interaction, message);
     }
 
     private async startServer(interaction: ChatInputCommandInteraction): Promise<void> {
         const memberRoles = await this.getMemberRoles(interaction);
         const serverInfo = this.getServerInfo(interaction);
         await this.minecraftServerProvider.startServer(serverInfo.id, memberRoles);
-        await interaction.editReply(renderTemplate(this.i18n.startCommandFeedback, serverInfo));
+        await this.replyOrEditInteraction(interaction, renderTemplate(this.i18n.startCommandFeedback, serverInfo));
     }
 
     private async stopServer(interaction: ChatInputCommandInteraction): Promise<void> {
         const memberRoles = await this.getMemberRoles(interaction);
         const serverInfo = this.getServerInfo(interaction);
         await this.minecraftServerProvider.stopServer(serverInfo.id, memberRoles);
-        await interaction.editReply(renderTemplate(this.i18n.stopCommandFeedback, serverInfo));
+        await this.replyOrEditInteraction(interaction, renderTemplate(this.i18n.stopCommandFeedback, serverInfo));
     }
 
     private async getServerStatus(interaction: ChatInputCommandInteraction): Promise<void> {
         const memberRoles = await this.getMemberRoles(interaction);
         const serverInfo = this.getServerInfo(interaction);
         const status = await this.minecraftServerProvider.getServerStatus(serverInfo.id, memberRoles);
-        await interaction.editReply(renderTemplate(this.i18n.serverStatus, {
+        await this.replyOrEditInteraction(interaction, renderTemplate(this.i18n.serverStatus, {
             ...status,
             statusEmoji: this.getStatusEmoji(status.status),
             statusSuffix: this.getStatusSuffix(status.status),
@@ -186,6 +182,14 @@ export class DiscordCommandsManager {
 
     private getStatusSuffix(status: ServerStatus): string {
         return this.i18n.statusSuffix[status];
+    }
+
+    private async replyOrEditInteraction(interaction: ChatInputCommandInteraction, message: string): Promise<void> {
+        if (interaction.replied || interaction.deferred) {
+            await interaction.editReply(message);
+        } else {
+            await interaction.reply(message);
+        }
     }
 }
 
