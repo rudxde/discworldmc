@@ -5,6 +5,8 @@ export const Languages = ['en', 'de'] as const;
 
 export class I18n {
     @IsString()
+    declare serverStartup: string;
+    @IsString()
     declare serverShutdown: string;
     @IsString()
     declare serverList: string;

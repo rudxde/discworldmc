@@ -10,4 +10,8 @@ export class DiscordConfiguration {
 
     @IsString()
     declare guildId: string;
+
+    @IsString()
+    declare defaultMessageChannelId: string;
+    
 }

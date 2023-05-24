@@ -1,5 +1,6 @@
 {
-    "serverShutdown": "The server {} has been shut down.",
+    "serverStartup": "The server #{serverId} has been started :green_circle:",
+    "serverShutdown": "The server #{serverId} has been shut down :octagonal_sign:",
     "serverList": "The following servers are available:\n\n{{#servers}}{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}{{#isRunning}} ({{playerCount}}/{{maxPlayers}} Players){{/isRunning}}\n\n{{/servers}}",
     "serverStatus": "{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}{{#isRunning}} ({{playerCount}}/{{maxPlayers}} Players){{/isRunning}}",
     "startCommandFeedback": "Starting server: **{{displayName}}** #{{id}}",
