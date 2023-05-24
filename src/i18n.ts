@@ -1,6 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsString, ValidateNested } from 'class-validator';
 
+export const Languages = ['en', 'de'] as const;
+
 export class I18n {
     @IsString()
     declare serverShutdown: string;

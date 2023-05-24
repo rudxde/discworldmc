@@ -1,8 +1,6 @@
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import * as fs from 'fs';
-import { } from 'fs';
-import { join as joinPath } from 'path';
 import 'reflect-metadata';
 import { AuthProviderService } from './auth/service/auth-provider-service';
 import { Configuration } from './configuration';
@@ -36,7 +34,7 @@ async function readConfigFile(): Promise<Configuration> {
 }
 
 async function readI18nFile(language: string): Promise<I18n> {
-    const i18nFilePath = joinPath(__dirname, `../i18n/${language}.json`);
+    const i18nFilePath = `./i18n/${language}.json`;
     if (!fs.existsSync(i18nFilePath)) {
         throw new Error(`The language ${language} is not supported`);
     }

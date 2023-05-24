@@ -4,6 +4,7 @@ import { AuthRoleConfig } from './auth/config/config';
 import { KubernetesConfig } from './kubernetes/config';
 import { RedisConfig } from './redis/config';
 import { DiscordConfiguration } from './discord/config';
+import { Languages } from './i18n';
 
 export class Configuration {
     /**
@@ -41,7 +42,7 @@ export class Configuration {
     public serverPingIntervalMs: number = 10000;
 
     @IsString()
-    @IsIn(['de', 'en'])
+    @IsIn(Languages)
     declare language: string;
 
     @IsDefined()
