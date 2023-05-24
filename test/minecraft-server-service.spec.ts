@@ -3,6 +3,8 @@ import { KubernetesProvider, MinecraftServerStatusPersistenceProvider, Minecraft
 import { MinecraftServerService } from '../src/domain/service/minecraft-server-service';
 import { KubernetesDeployment } from '../src/domain/entities/kubernetes';
 import { ServerStatus } from '../src/domain/entities/server';
+import { ServerAlreadyRunning } from '../src/error/server-already-running';
+import { ServerStartLimitError } from '../src/error/server-start-limit';
 interface TestThisContext {
     minecraftPlayerCountProvider: MinecraftServerStatusProvider;
     minecraftServerStatusPersistence: MinecraftServerStatusPersistenceProvider;
@@ -193,6 +195,92 @@ describe('MinecraftServerService', () => {
             );
             const result = minecraftServerService.getServerStatus('server-id');
             await expectAsync(result).toBeRejectedWithError(`Server not found: server-id`);
+        });
+    });
+    
+    describe('startServer', () => {
+        beforeEach(function (this: TestThisContext) {
+            this.configuration.servers.push({
+                id: 'server-1',
+                deploymentName: 'deployment-name',
+                displayName: 'display-name',
+                serviceName: 'service-name',
+                servicePort: 25565,
+            });
+        });
+        it('should start the server', async function (this: TestThisContext) {
+            const kubernetesServerDeployment: KubernetesDeployment = {
+                name: 'deployment-name',
+                namespace: 'kubernetes-namespace',
+                specReplicas: 0,
+                readyReplicas: 0,
+                totalReplicas: 0,
+            };
+            this.kubernetesProviderGetDeploymentSpy.and.resolveTo(<KubernetesDeployment>kubernetesServerDeployment);
+            this.kubernetesProviderGetDeploymentsInNamespaceSpy.and.resolveTo(<KubernetesDeployment[]>[kubernetesServerDeployment]);
+            const minecraftServerService = new MinecraftServerService(
+                this.minecraftPlayerCountProvider,
+                this.minecraftServerStatusPersistence,
+                this.kubernetesProvider,
+                this.configuration,
+            );
+            await minecraftServerService.startServer('server-1');
+            expect(this.kubernetesProviderScaleDeploymentSpy).toHaveBeenCalledWith('deployment-name', 1);
+        });
+        it('should not start the server if already running', async function (this: TestThisContext) {
+            const kubernetesServerDeployment: KubernetesDeployment = {
+                name: 'deployment-name',
+                namespace: 'kubernetes-namespace',
+                specReplicas: 1,
+                readyReplicas: 1,
+                totalReplicas: 1,
+            };
+            this.kubernetesProviderGetDeploymentSpy.and.resolveTo(<KubernetesDeployment>kubernetesServerDeployment);
+            this.kubernetesProviderGetDeploymentsInNamespaceSpy.and.resolveTo(<KubernetesDeployment[]>[kubernetesServerDeployment]);
+            const minecraftServerService = new MinecraftServerService(
+                this.minecraftPlayerCountProvider,
+                this.minecraftServerStatusPersistence,
+                this.kubernetesProvider,
+                this.configuration,
+            );
+            const result = minecraftServerService.startServer('server-1');
+            await expectAsync(result).toBeRejectedWith(new ServerAlreadyRunning('server-1'));
+        });
+        it('should not start other server if one server if already running', async function (this: TestThisContext) {
+            this.configuration.servers.push({
+                id: 'server-2',
+                deploymentName: 'deployment2-name',
+                displayName: 'display-name-2',
+                serviceName: 'service-name-2',
+                servicePort: 25565,
+            });
+            const kubernetesServer1Deployment: KubernetesDeployment = {
+                name: 'deployment-name',
+                namespace: 'kubernetes-namespace',
+                specReplicas: 0,
+                readyReplicas: 0,
+                totalReplicas: 0,
+            };
+            const kubernetesServer2Deployment: KubernetesDeployment = {
+                name: 'deployment2-name',
+                namespace: 'kubernetes-namespace',
+                specReplicas: 1,
+                readyReplicas: 1,
+                totalReplicas: 1,
+            };
+            this.kubernetesProviderGetDeploymentSpy.and.callFake((id) => [ kubernetesServer1Deployment,kubernetesServer2Deployment].find((d) => d.name === id));
+            this.kubernetesProviderGetDeploymentsInNamespaceSpy.and.resolveTo(<KubernetesDeployment[]>[
+                kubernetesServer1Deployment,
+                kubernetesServer2Deployment,
+            ]);
+            const minecraftServerService = new MinecraftServerService(
+                this.minecraftPlayerCountProvider,
+                this.minecraftServerStatusPersistence,
+                this.kubernetesProvider,
+                this.configuration,
+            );
+            const result = minecraftServerService.startServer('server-1');
+            await expectAsync(result).toBeRejectedWith(new ServerStartLimitError('server-1', 1));
         });
     });
 });
