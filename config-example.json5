@@ -42,7 +42,9 @@
         // The token of the discord bot
         "token" : "secret",
         // The id of the guild where the bot should be used
-        "guildId" : "5678"
+        "guildId" : "5678",
+        // The id of a channel used to send messages which are not direct responses to a command
+        "defaultMessageChannelId": "9011"
     },
     // config for redis
     "redis": {
