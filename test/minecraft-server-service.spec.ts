@@ -62,6 +62,7 @@ describe('MinecraftServerService', () => {
                 appId: '',
                 token: '',
                 guildId: '',
+                defaultMessageChannelId: '',
             },
             redis: {
                 host: 'redis-host',
