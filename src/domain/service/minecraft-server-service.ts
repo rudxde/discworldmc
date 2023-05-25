@@ -209,13 +209,15 @@ export class MinecraftServerService implements MinecraftServerProvider {
     }
 
     private async broadcastMessage(serverId: string, event: ServerEvent): Promise<void> {
-        for (const listener of this.onServerStopListeners) {
-            try {
-                await listener(serverId, event);
-            } catch (err) {
-                console.error(err);
-            }
-        }
+        await Promise.all(this.onServerStopListeners.map(
+            async (listener) => {
+                try {
+                    await listener(serverId, event);
+                } catch (err) {
+                    console.error(err);
+                }
+            },
+        ));
     }
 
     private getServerConfig(serverId: string): ServerConfiguration {
