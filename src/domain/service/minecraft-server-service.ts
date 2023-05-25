@@ -178,10 +178,10 @@ export class MinecraftServerService implements MinecraftServerProvider {
             if (lastServerStatus === server.status) {
                 continue;
             }
-            if (lastServerStatus === ServerStatus.STOPPING && server.status === ServerStatus.STOPPED) {
+            if (server.status === ServerStatus.STOPPED) {
                 await this.broadcastMessage(server.id, ServerEvent.STOPPED);
             }
-            if (lastServerStatus === ServerStatus.STARTING && server.status === ServerStatus.RUNNING) {
+            if (server.status === ServerStatus.RUNNING) {
                 await this.broadcastMessage(server.id, ServerEvent.STARTED);
             }
         }
