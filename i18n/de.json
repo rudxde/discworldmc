@@ -1,6 +1,6 @@
 {
-    "serverStartup": "Der Server #{serverId} wurde gestartet :green_circle:",
-    "serverShutdown": "Der Server #{serverId} wurde heruntergefahren :octagonal_sign:",
+    "serverStartup": "Der Server #{{serverId}} wurde gestartet :green_circle:",
+    "serverShutdown": "Der Server #{{serverId}} wurde heruntergefahren :octagonal_sign:",
     "serverList": "Die folgenden Server sind verfügbar:\n\n{{#servers}}{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}{{#isRunning}} ({{playerCount}}/{{maxPlayers}} Spieler){{/isRunning}}\n\n{{/servers}}",
     "serverStatus": "{{statusEmoji}} {{displayName}} #{{id}}{{statusSuffix}}{{#isRunning}} ({{playerCount}}/{{maxPlayers}} Spieler){{/isRunning}}",
     "startCommandFeedback": "Starte Server: **{{displayName}}** #{{id}}",
