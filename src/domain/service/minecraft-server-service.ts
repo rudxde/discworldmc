@@ -210,7 +210,11 @@ export class MinecraftServerService implements MinecraftServerProvider {
 
     private broadcastMessage(serverId: string, event: ServerEvent): void {
         for (const listener of this.onServerStopListeners) {
-            listener(serverId, event);
+            try {
+                listener(serverId, event);
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 
