@@ -179,10 +179,10 @@ export class MinecraftServerService implements MinecraftServerProvider {
                 continue;
             }
             if (lastServerStatus === ServerStatus.STOPPING && server.status === ServerStatus.STOPPED) {
-                this.broadcastMessage(server.id, ServerEvent.STOPPED);
+                await this.broadcastMessage(server.id, ServerEvent.STOPPED);
             }
             if (lastServerStatus === ServerStatus.STARTING && server.status === ServerStatus.RUNNING) {
-                this.broadcastMessage(server.id, ServerEvent.STARTED);
+                await this.broadcastMessage(server.id, ServerEvent.STARTED);
             }
         }
 
@@ -208,10 +208,10 @@ export class MinecraftServerService implements MinecraftServerProvider {
         }
     }
 
-    private broadcastMessage(serverId: string, event: ServerEvent): void {
+    private async broadcastMessage(serverId: string, event: ServerEvent): Promise<void> {
         for (const listener of this.onServerStopListeners) {
             try {
-                listener(serverId, event);
+                await listener(serverId, event);
             } catch (err) {
                 console.error(err);
             }

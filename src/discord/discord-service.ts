@@ -5,6 +5,7 @@ import { ServerEvent } from '../domain/inbound';
 import { I18n } from '../i18n';
 import { DiscordCommandsManager } from './commands';
 import { DiscordConfiguration } from './config';
+import { TextChannel } from 'discord.js';
 
 
 export class DiscordService {
@@ -41,7 +42,7 @@ export class DiscordService {
         await this.commandManager.handleChatCommand(interaction);
     }
 
-    onMinecraftServerEvent(serverId: string, reason: ServerEvent): void {
+    async onMinecraftServerEvent(serverId: string, reason: ServerEvent): Promise<void> {
         let message: string;
         if (reason === ServerEvent.STARTED) {
             message = renderTemplate(this.i18n.serverStartup, { serverId });
@@ -50,9 +51,14 @@ export class DiscordService {
         } else {
             throw new Error(`DiscordService received an invalid ServerEvent: ${reason}`);
         }
-        this.client.rest.post(
-            Routes.channelMessages(this.config.defaultMessageChannelId),
-            { body: JSON.stringify({ content: message }) },
-        );
+        
+        const defaultChannel = await this.client.channels.fetch(this.config.defaultMessageChannelId);
+        if (!defaultChannel) {
+            throw new Error(`DiscordService received an invalid channelID: ${this.config.defaultMessageChannelId}`);
+        }
+        if (!(defaultChannel instanceof TextChannel)) {
+            throw new Error(`DiscordService received an invalid channel type: ${defaultChannel.type}`);
+        }
+        await defaultChannel.send(message);
     }
 }

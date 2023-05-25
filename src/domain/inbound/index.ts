@@ -5,7 +5,7 @@ export enum ServerEvent {
     STARTED = 'started',
 }
 
-export type OnServerStopListener = (serverId: string, reason: ServerEvent) => void;
+export type OnServerStopListener = (serverId: string, reason: ServerEvent) => void | Promise<void>;
 
 export interface MinecraftServerProvider {
     getServerStatus(serverId: string): Promise<MinecraftServerStatus>;
