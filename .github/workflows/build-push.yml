@@ -52,8 +52,8 @@ jobs:
           push: true
           tags: rudxde/discworldmc:latest , rudxde/discworldmc:build.${{ github.run_number }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=rudxde/discworldmc:latest
-          cache-to: type=inline
+          cache-from: type=registry,ref=rudxde/discworldmc:buildcache
+          cache-to: type=registry,ref=rudxde/discworldmc:buildcache,mode=max
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v3
         with:
