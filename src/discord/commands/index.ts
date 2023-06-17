@@ -27,7 +27,6 @@ export class DiscordCommandsManager {
         this.commandData = new SlashCommandBuilder()
             .setName('dw')
             .setDescription(this.i18n.commandDescriptions.rootCommand)
-            .setDefaultMemberPermissions('0')
             .addSubcommandGroup(new SlashCommandSubcommandGroupBuilder()
                 .setName('server')
                 .setDescription(this.i18n.commandDescriptions.serverCommand)
