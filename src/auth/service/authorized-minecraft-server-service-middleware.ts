@@ -19,7 +19,7 @@ export class AuthorizedMinecraftServerServiceMiddleware implements AuthorizedMin
 
     startServer(serverId: string, roles: string[]): Promise<void> {
         if (!this.authProvider.checkForPermission(`dw.server.start.${serverId}`, roles)) {
-            throw new UnauthorizedError(`Unauthorized request: 'dw.server.start.${serverId}'`);
+            throw new UnauthorizedError(`Unauthorized request: 'dw.server.start.${serverId}', with roles: "${roles.join(', ')}"`);
         }
         return this.minecraftServerProvider.startServer(serverId);
     }
