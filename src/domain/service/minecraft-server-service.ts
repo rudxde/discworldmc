@@ -170,8 +170,7 @@ export class MinecraftServerService implements MinecraftServerProvider {
         const serverstatus = await this.getServers();
 
         for (const server of serverstatus) {
-            const lastServerStatus = await this.minecraftServerStatusPersistence.getServerStatus(server.id);
-            await this.minecraftServerStatusPersistence.setServerStatus(server.id, server.status);
+            const lastServerStatus = await this.minecraftServerStatusPersistence.setServerStatus(server.id, server.status);
             if (!lastServerStatus) {
                 continue;
             }

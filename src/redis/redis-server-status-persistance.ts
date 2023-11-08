@@ -33,8 +33,12 @@ export class RedisServerStatusPersistance implements MinecraftServerStatusPersis
         return new Date(parseInt(lastSeen, 10));
     }
 
-    async setServerStatus(serverId: string, status: ServerStatus): Promise<void> {
-        await this.redisClient.set(`server:${serverId}:status`, status);
+    async setServerStatus(serverId: string, newStatus: ServerStatus): Promise<ServerStatus | undefined> {
+        const oldStatus = await this.redisClient.getSet(`server:${serverId}:status`, newStatus);
+        if (!oldStatus) {
+            return undefined;
+        }
+        return oldStatus as ServerStatus;
     }
 
     async getServerStatus(serverId: string): Promise<ServerStatus | undefined> {

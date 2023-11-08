@@ -9,7 +9,7 @@ export interface MinecraftServerStatusProvider {
 export interface MinecraftServerStatusPersistenceProvider {
     setPlayersLastSeen(serverId: string, lastSeen: Date): Promise<void>;
     getPlayersLastSeen(serverId: string): Promise<Date | undefined>;
-    setServerStatus(serverId: string, status: ServerStatus): Promise<void>;
+    setServerStatus(serverId: string, status: ServerStatus): Promise<ServerStatus | undefined>;
     getServerStatus(serverId: string): Promise<ServerStatus | undefined>;
 }
 
