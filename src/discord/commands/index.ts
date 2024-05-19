@@ -27,10 +27,6 @@ export class DiscordCommandsManager {
         private readonly i18n: I18n,
     ) {
         this.serverInfos = this.minecraftServerProvider.getServerInfos();
-        const serverChoices = this.serverInfos.map(server => ({
-            name: server.id,
-            value: `#${server.id}`,
-        }));
         this.commandData = new SlashCommandBuilder()
             .setName('dw')
             .setDescription(this.i18n.commandDescriptions.rootCommand)
@@ -48,7 +44,7 @@ export class DiscordCommandsManager {
                         .setName('server-id')
                         .setDescription(this.i18n.commandDescriptions.startCommandServerId)
                         .setRequired(true)
-                        .setChoices(...serverChoices),
+                        .setAutocomplete(true),
                     ),
                 )
                 .addSubcommand(new SlashCommandSubcommandBuilder()
