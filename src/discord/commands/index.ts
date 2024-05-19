@@ -178,6 +178,11 @@ export class DiscordCommandsManager {
     private async autoCompleteServer(interaction: AutocompleteInteraction, action: PossibleActions): Promise<void> {
         const memberRoles = await this.getMemberRoles(interaction);
         const allowedServers = this.minecraftServerProvider.getAllowedServerInfosForPermissions(memberRoles, action);
+        const focusedValue = interaction.options.getFocused();
+        let filteredServers = allowedServers;
+        if (focusedValue) {
+            filteredServers = allowedServers.filter(server => server.id.includes(focusedValue));
+        }
         await interaction.respond(allowedServers.map(server => ({
             name: server.id,
             value: `#${server.id}`,
