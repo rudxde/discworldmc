@@ -68,7 +68,7 @@ export class DiscordCommandsManager {
                         .setName('server-id')
                         .setDescription(this.i18n.commandDescriptions.statusCommandServerId)
                         .setRequired(true)
-                        .setChoices(...serverChoices),
+                        .setAutocomplete(true),
                     ),
                 ),
             );
@@ -117,7 +117,7 @@ export class DiscordCommandsManager {
             await this.replyOrEditInteraction(interaction, message);
         }
     }
-    
+
     async handleAutocompleteCommand(interaction: AutocompleteInteraction): Promise<void> {
         try {
             if (interaction.commandName !== this.commandData.name) {
@@ -127,10 +127,10 @@ export class DiscordCommandsManager {
             if (subcommandGroup === 'server') {
                 const subcommand = interaction.options.getSubcommand(true);
                 const subCommandIsPossibleAction = Object.values(PossibleActions).indexOf(subcommand as PossibleActions) !== -1;
-                if(subCommandIsPossibleAction) {
-                    await this.autoCompleteServer(interaction, subcommand as PossibleActions);
+                if (!subCommandIsPossibleAction) {
+                    throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup} ${subcommand}`);
                 }
-                throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup} ${subcommand}`);
+                await this.autoCompleteServer(interaction, subcommand as PossibleActions);
             }
             throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup}`);
         } catch (err: unknown) {
@@ -178,7 +178,7 @@ export class DiscordCommandsManager {
     private async autoCompleteServer(interaction: AutocompleteInteraction, action: PossibleActions): Promise<void> {
         const memberRoles = await this.getMemberRoles(interaction);
         const allowedServers = this.minecraftServerProvider.getAllowedServerInfosForPermissions(memberRoles, action);
-        interaction.respond(allowedServers.map(server => ({
+        await interaction.respond(allowedServers.map(server => ({
             name: server.id,
             value: `#${server.id}`,
         })));
