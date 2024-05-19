@@ -30,7 +30,7 @@
     "discord.js": "^14.14.1",
     "express": "^4.18.2",
     "json5": "^2.2.3",
-    "minecraft-protocol": "^1.45.0",
+    "minecraft-protocol": "^1.26.5",
     "mustache": "^4.2.0",
     "redis": "^4.6.14",
     "reflect-metadata": "^0.2.1"
