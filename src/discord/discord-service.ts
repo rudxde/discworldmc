@@ -36,10 +36,14 @@ export class DiscordService {
     }
 
     async handleInteraction(interaction: Interaction): Promise<void> {
-        if (!interaction.isChatInputCommand()) {
+        if (interaction.isChatInputCommand()) {
+            await this.commandManager.handleChatCommand(interaction);
             return;
         }
-        await this.commandManager.handleChatCommand(interaction);
+        if (interaction.isAutocomplete()) {
+            await this.commandManager.handleAutocompleteCommand(interaction);
+            return;
+        }
     }
 
     async onMinecraftServerEvent(serverId: string, reason: ServerEvent): Promise<void> {

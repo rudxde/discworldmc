@@ -1,3 +1,4 @@
+import { PossibleActions } from '../../domain/entities/possible-action';
 import { MinecraftServerStatus, MinecraftServerInfo } from '../../domain/entities/server';
 import { MinecraftServerProvider, OnServerStopListener } from '../../domain/inbound';
 import { UnauthorizedError } from '../../error/unauthorized';
@@ -40,6 +41,12 @@ export class AuthorizedMinecraftServerServiceMiddleware implements AuthorizedMin
 
     getServerInfos(): MinecraftServerInfo[] {
         return this.minecraftServerProvider.getServerInfos();
+    }
+    
+    getAllowedServerInfosForPermissions(roles: string[], possibleAction: PossibleActions): MinecraftServerInfo[] {
+        return this.minecraftServerProvider.getServerInfos().filter(serverInfo => {
+            return this.authProvider.checkForPermission(`dw.server.${possibleAction}.${serverInfo.id}`, roles);
+        });
     }
 
     onServerEvent(listener: OnServerStopListener): void {

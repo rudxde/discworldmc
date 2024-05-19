@@ -1,5 +1,6 @@
 import { MinecraftServerInfo, MinecraftServerStatus } from '../../domain/entities/server';
 import { OnServerStopListener } from '../../domain/inbound';
+import { PossibleActions } from '../../domain/entities/possible-action';
 
 export interface AuthProvider {
     checkForPermission(
@@ -13,6 +14,7 @@ export interface AuthorizedMinecraftServerProvider {
     startServer(serverId: string, roles: string[]): Promise<void>;
     stopServer(serverId: string, roles: string[]): Promise<void>;
     getServers(roles: string[]): Promise<MinecraftServerStatus[]>;
-    getServerInfos(): MinecraftServerInfo[];
+    getServerInfos(possibleAction?: PossibleActions): MinecraftServerInfo[];
+    getAllowedServerInfosForPermissions(roles: string[], possibleAction: PossibleActions): MinecraftServerInfo[];
     onServerEvent(listener: OnServerStopListener): void;
 }

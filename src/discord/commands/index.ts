@@ -1,6 +1,12 @@
 import {
-    ChatInputCommandInteraction, GuildMember, RESTPostAPIApplicationCommandsJSONBody,
-    SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder,
+    ChatInputCommandInteraction,
+    AutocompleteInteraction,
+    GuildMember,
+    RESTPostAPIApplicationCommandsJSONBody,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+    SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder,
+    BaseInteraction,
 } from 'discord.js';
 import { render as renderTemplate } from 'mustache';
 import { AuthorizedMinecraftServerProvider } from '../../auth/inbound';
@@ -9,6 +15,7 @@ import { BaseError } from '../../error/base-error';
 import { InvalidCommand } from '../../error/invalid-command';
 import { ServerNotFound } from '../../error/server-not-found';
 import { I18n } from '../../i18n';
+import { PossibleActions } from '../../domain/entities/possible-action';
 
 
 export class DiscordCommandsManager {
@@ -51,7 +58,7 @@ export class DiscordCommandsManager {
                         .setName('server-id')
                         .setDescription(this.i18n.commandDescriptions.stopCommandServerId)
                         .setRequired(true)
-                        .setChoices(...serverChoices),
+                        .setAutocomplete(true),
                     ),
                 )
                 .addSubcommand(new SlashCommandSubcommandBuilder()
@@ -110,6 +117,33 @@ export class DiscordCommandsManager {
             await this.replyOrEditInteraction(interaction, message);
         }
     }
+    
+    async handleAutocompleteCommand(interaction: AutocompleteInteraction): Promise<void> {
+        try {
+            if (interaction.commandName !== this.commandData.name) {
+                throw new InvalidCommand(interaction.commandName);
+            }
+            const subcommandGroup = interaction.options.getSubcommandGroup(true);
+            if (subcommandGroup === 'server') {
+                const subcommand = interaction.options.getSubcommand(true);
+                const subCommandIsPossibleAction = Object.values(PossibleActions).indexOf(subcommand as PossibleActions) !== -1;
+                if(subCommandIsPossibleAction) {
+                    await this.autoCompleteServer(interaction, subcommand as PossibleActions);
+                }
+                throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup} ${subcommand}`);
+            }
+            throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup}`);
+        } catch (err: unknown) {
+            console.error(err);
+            let message: string;
+            if (err instanceof BaseError) {
+                message = renderTemplate(this.i18n.errors[err.i18nEntry], err);
+            } else {
+                message = this.i18n.errors.unknown;
+            }
+            await interaction.respond([]);
+        }
+    }
 
     private async listServers(interaction: ChatInputCommandInteraction): Promise<void> {
         const memberRoles = await this.getMemberRoles(interaction);
@@ -141,6 +175,15 @@ export class DiscordCommandsManager {
         await this.replyOrEditInteraction(interaction, renderTemplate(this.i18n.stopCommandFeedback, serverInfo));
     }
 
+    private async autoCompleteServer(interaction: AutocompleteInteraction, action: PossibleActions): Promise<void> {
+        const memberRoles = await this.getMemberRoles(interaction);
+        const allowedServers = this.minecraftServerProvider.getAllowedServerInfosForPermissions(memberRoles, action);
+        interaction.respond(allowedServers.map(server => ({
+            name: server.id,
+            value: `#${server.id}`,
+        })));
+    }
+
     private async getServerStatus(interaction: ChatInputCommandInteraction): Promise<void> {
         const memberRoles = await this.getMemberRoles(interaction);
         const serverInfo = this.getServerInfo(interaction);
@@ -153,7 +196,7 @@ export class DiscordCommandsManager {
         }));
     }
 
-    private async getMemberRoles(interaction: ChatInputCommandInteraction): Promise<string[]> {
+    private async getMemberRoles(interaction: BaseInteraction): Promise<string[]> {
         const member = interaction.member;
         if (!member) {
             throw new Error('Received interaction with unexpected type for \'member\'');
