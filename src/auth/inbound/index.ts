@@ -14,7 +14,7 @@ export interface AuthorizedMinecraftServerProvider {
     startServer(serverId: string, roles: string[]): Promise<void>;
     stopServer(serverId: string, roles: string[]): Promise<void>;
     getServers(roles: string[]): Promise<MinecraftServerStatus[]>;
-    getServerInfos(possibleAction?: PossibleActions): MinecraftServerInfo[];
-    getAllowedServerInfosForPermissions(roles: string[], possibleAction: PossibleActions): MinecraftServerInfo[];
+    getServerInfos(possibleAction?: PossibleActions): Promise<MinecraftServerInfo[]>;
+    getAllowedServerInfosForPermissions(roles: string[], possibleAction: PossibleActions): Promise<MinecraftServerInfo[]>;
     onServerEvent(listener: OnServerStopListener): void;
 }

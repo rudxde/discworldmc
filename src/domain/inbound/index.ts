@@ -1,3 +1,4 @@
+import { PossibleActions } from '../entities/possible-action';
 import { MinecraftServerInfo, MinecraftServerStatus } from '../entities/server';
 
 export enum ServerEvent {
@@ -12,6 +13,6 @@ export interface MinecraftServerProvider {
     startServer(serverId: string): Promise<void>;
     stopServer(serverId: string): Promise<void>;
     getServers(): Promise<MinecraftServerStatus[]>;
-    getServerInfos(): MinecraftServerInfo[];
+    getServerInfos(possibleAction?: PossibleActions): Promise<MinecraftServerInfo[]>;
     onServerEvent(listener: OnServerStopListener): void;
 }

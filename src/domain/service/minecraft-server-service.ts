@@ -6,6 +6,7 @@ import { ServerIsStopping } from '../../error/server-is-stopping';
 import { ServerNotFound } from '../../error/server-not-found';
 import { ServerStartLimitError } from '../../error/server-start-limit';
 import { KubernetesDeployment } from '../entities/kubernetes';
+import { PossibleActions } from '../entities/possible-action';
 import { MinecraftServerInfo, MinecraftServerStatus, ServerStatus } from '../entities/server';
 import { MinecraftServerProvider, OnServerStopListener, ServerEvent } from '../inbound';
 import type { KubernetesProvider, MinecraftServerStatusProvider, MinecraftServerStatusPersistenceProvider } from '../outbound';
@@ -133,11 +134,32 @@ export class MinecraftServerService implements MinecraftServerProvider {
         return status;
     }
 
-    getServerInfos(): MinecraftServerInfo[] {
-        return this.configuration.servers.map(server => ({
+    async getServerInfos(possibleAction?: PossibleActions): Promise<MinecraftServerInfo[]> {
+        const servers = this.configuration.servers.map(server => ({
             id: server.id,
             displayName: server.displayName,
         }));
+        if (possibleAction === PossibleActions.start) {
+            const asyncFilter = servers.map(async server => {
+                const status = await this.getServerStatus(server.id);
+                if (status.status !== ServerStatus.STOPPED) {
+                    return null;
+                }
+                return server;
+            });
+            return await Promise.all(asyncFilter).then((result) => result.filter((x): x is MinecraftServerInfo => Boolean(x)));
+        }
+        if (possibleAction === PossibleActions.stop) {
+            const asyncFilter = servers.map(async server => {
+                const status = await this.getServerStatus(server.id);
+                if (status.status !== ServerStatus.RUNNING) {
+                    return null;
+                }
+                return server;
+            });
+            return await Promise.all(asyncFilter).then((result) => result.filter((x): x is MinecraftServerInfo => Boolean(x)));
+        }
+        return servers;
     }
 
     onServerEvent(listener: (serverId: string, reason: ServerEvent) => void): void {

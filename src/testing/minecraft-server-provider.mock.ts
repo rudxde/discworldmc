@@ -39,7 +39,7 @@ export class MinecraftServerProviderMock implements MinecraftServerProvider {
         return this.servers;
     }
 
-    getServerInfos(): MinecraftServerInfo[] {
+    async getServerInfos(): Promise<MinecraftServerInfo[]> {
         return this.servers.map(server => ({
             id: server.id,
             displayName: server.displayName,

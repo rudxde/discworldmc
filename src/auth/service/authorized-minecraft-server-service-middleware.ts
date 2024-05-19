@@ -39,12 +39,12 @@ export class AuthorizedMinecraftServerServiceMiddleware implements AuthorizedMin
         return this.minecraftServerProvider.getServers();
     }
 
-    getServerInfos(): MinecraftServerInfo[] {
+    getServerInfos(): Promise<MinecraftServerInfo[]> {
         return this.minecraftServerProvider.getServerInfos();
     }
     
-    getAllowedServerInfosForPermissions(roles: string[], possibleAction: PossibleActions): MinecraftServerInfo[] {
-        return this.minecraftServerProvider.getServerInfos().filter(serverInfo => {
+    async getAllowedServerInfosForPermissions(roles: string[], possibleAction: PossibleActions): Promise<MinecraftServerInfo[]> {
+        return (await this.minecraftServerProvider.getServerInfos(possibleAction)).filter(serverInfo => {
             return this.authProvider.checkForPermission(`dw.server.${possibleAction}.${serverInfo.id}`, roles);
         });
     }

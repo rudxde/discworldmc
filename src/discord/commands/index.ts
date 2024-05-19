@@ -20,13 +20,13 @@ import { PossibleActions } from '../../domain/entities/possible-action';
 
 export class DiscordCommandsManager {
     private readonly commandData: SlashCommandSubcommandsOnlyBuilder;
-    private readonly serverInfos: MinecraftServerInfo[];
+    private serverInfos?: MinecraftServerInfo[];
 
     constructor(
         private readonly minecraftServerProvider: AuthorizedMinecraftServerProvider,
         private readonly i18n: I18n,
     ) {
-        this.serverInfos = this.minecraftServerProvider.getServerInfos();
+        this.minecraftServerProvider.getServerInfos().then(x => this.serverInfos = x);
         this.commandData = new SlashCommandBuilder()
             .setName('dw')
             .setDescription(this.i18n.commandDescriptions.rootCommand)
@@ -173,7 +173,7 @@ export class DiscordCommandsManager {
 
     private async autoCompleteServer(interaction: AutocompleteInteraction, action: PossibleActions): Promise<void> {
         const memberRoles = await this.getMemberRoles(interaction);
-        const allowedServers = this.minecraftServerProvider.getAllowedServerInfosForPermissions(memberRoles, action);
+        const allowedServers = await this.minecraftServerProvider.getAllowedServerInfosForPermissions(memberRoles, action);
         const focusedValue = interaction.options.getFocused();
         let filteredServers = allowedServers;
         if (focusedValue) {
@@ -212,6 +212,7 @@ export class DiscordCommandsManager {
 
     private getServerInfo(interaction: ChatInputCommandInteraction): MinecraftServerInfo {
         const id = stripIdHashtag(interaction.options.getString('server-id', true));
+        if (!this.serverInfos) throw new Error('Server infos not loaded');
         const serverInfo = this.serverInfos.find(server => server.id === id);
         if (!serverInfo) {
             throw new ServerNotFound(id);
