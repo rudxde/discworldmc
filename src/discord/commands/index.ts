@@ -124,15 +124,15 @@ export class DiscordCommandsManager {
                 throw new InvalidCommand(interaction.commandName);
             }
             const subcommandGroup = interaction.options.getSubcommandGroup(true);
-            if (subcommandGroup === 'server') {
-                const subcommand = interaction.options.getSubcommand(true);
-                const subCommandIsPossibleAction = Object.values(PossibleActions).indexOf(subcommand as PossibleActions) !== -1;
-                if (!subCommandIsPossibleAction) {
-                    throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup} ${subcommand}`);
-                }
-                await this.autoCompleteServer(interaction, subcommand as PossibleActions);
+            if (subcommandGroup !== 'server') {
+                throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup}`);
             }
-            throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup}`);
+            const subcommand = interaction.options.getSubcommand(true);
+            const subCommandIsPossibleAction = Object.values(PossibleActions).indexOf(subcommand as PossibleActions) !== -1;
+            if (!subCommandIsPossibleAction) {
+                throw new InvalidCommand(`${interaction.commandName} ${subcommandGroup} ${subcommand}`);
+            }
+            await this.autoCompleteServer(interaction, subcommand as PossibleActions);
         } catch (err: unknown) {
             console.error(err);
             let message: string;
